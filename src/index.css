@@ -23,6 +23,9 @@ body {
   font-weight: 700;
   color: var(--color-secondary);
 }
+a:hover{
+  color: var(--color-secondary);
+}
 /* .active:hover{
   background-color: aqua;
   color: brown !important;

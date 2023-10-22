@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
+// dipake di App.jsx buat tiap kali ganti halaman, langsung di scrol to top lagi.
 
 function ScrollToTop() {
   const { pathname } = useLocation();

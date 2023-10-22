@@ -4,9 +4,10 @@ import Register from "./pages/Auth/RegisterPage";
 import ErrorPage from "./pages/ErrorPage";
 import Dashboard from "./pages/Admin/Dashboard";
 import axios from "axios";
-import Homepage from "./pages/Homepage";
+// import Homepage from "./pages/Homepage";
 import KamarPage from "./pages/Customer/KamarPage";
 import ScrollToTop from "./ScrollToTop";
+import Home from "./pages/Home";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/api";
 
@@ -15,7 +16,7 @@ function App() {
     <BrowserRouter>
       <ScrollToTop/>
       <Routes>
-        <Route index element={<Homepage />} />
+        <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
         <Route path="kamar" element={<KamarPage />} />
