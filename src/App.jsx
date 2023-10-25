@@ -8,6 +8,11 @@ import axios from "axios";
 import KamarPage from "./pages/Customer/KamarPage";
 import ScrollToTop from "./ScrollToTop";
 import Home from "./pages/Home";
+import ForgetPassword from "./pages/Auth/ForgetPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
+import ProfilPage from "./pages/Customer/ProfilPage";
+import RiwayatReservasi from "./pages/Customer/RiwayatReservasi";
+import DetailKamar from "./pages/Customer/DetailKamar";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/api";
 
@@ -18,8 +23,13 @@ function App() {
       <Routes>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
+        <Route path="forgetPassword" element={<ForgetPassword />} />
+        <Route path="resetPassword/:token" element={<ResetPassword/>} />
         <Route path="register" element={<Register />} />
         <Route path="kamar" element={<KamarPage />} />
+        <Route path="kamar/:id" element={<DetailKamar />} />
+        <Route path="profil" element={<ProfilPage />} />
+        <Route path="riwayatReservasi" element={<RiwayatReservasi />} />
         <Route path="*" element={<ErrorPage />} />
         <Route path="dashboard" element={<Dashboard />}></Route>
       </Routes>

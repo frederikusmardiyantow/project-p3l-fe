@@ -1,5 +1,4 @@
 // main.tsx or main.jsx
-import React from "react";
 import ReactDOM from "react-dom/client";
 import { NextUIProvider } from "@nextui-org/react";
 import App from "./App";
@@ -8,9 +7,14 @@ import "react-toastify/dist/ReactToastify.css";
 import { ToastContainer } from "react-toastify";
 import "slick-carousel/slick/slick.css"; 
 import "slick-carousel/slick/slick-theme.css";
+import 'react-calendar/dist/Calendar.css';
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/grid';
+import 'swiper/css/pagination';
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
+  // <React.StrictMode>
     <NextUIProvider>
       <App />
       <ToastContainer
@@ -26,5 +30,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         theme="colored"
       />
     </NextUIProvider>
-  </React.StrictMode>
+  // </React.StrictMode>
 );

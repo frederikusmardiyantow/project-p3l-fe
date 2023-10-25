@@ -26,6 +26,7 @@ body {
 a:hover{
   color: var(--color-secondary);
 }
+
 /* .active:hover{
   background-color: aqua;
   color: brown !important;

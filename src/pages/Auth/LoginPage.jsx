@@ -42,7 +42,6 @@ function LoginPage() {
     setPassword(e.target.value);
   }
   async function handleSubmit(e) {
-    
     e.preventDefault();
     setLoad(true);
     const response = await loginUser({
@@ -52,6 +51,7 @@ function LoginPage() {
     setLoad(false);
     if (response.data.status === "T") {
       toast.success(response.data.message);
+      localStorage.setItem('apiKey', response.data.data.authorization.token);
       navigation('/');
     } else {
       setValidation(response.data.message);
@@ -81,7 +81,7 @@ function LoginPage() {
               silakan melakukan login dengan akun yang terverifikasi.
             </p>
             <form
-              className="flex flex-col gap-5 px-3 pt-3"
+              className="flex flex-col px-3 pt-3"
             >
               <InputComp
                 id="email"
@@ -99,12 +99,14 @@ function LoginPage() {
                 name="Password"
                 placeholder="Masukkan Password"
                 autoComplete="off"
+                className="mt-3"
                 value={password}
                 onChange={handlePasswordInput}
                 validation={validation.password && validation.password[0] }
               >
                 <BiSolidLockAlt className="absolute h-8 w-8 z-10 mx-3 border-1 border-solid border-primary text-primary rounded-full p-1" />
               </InputComp>
+              <p className="text-end text-slate-300 mb-3 "><Link to="/forgetPassword">Lupa Password?</Link></p>
               <Button color="secondary" isLoading={load} onClick={handleSubmit} className="text-primary font-semibold hover:text-white">
                 Login
               </Button>

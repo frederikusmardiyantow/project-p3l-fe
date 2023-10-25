@@ -4,9 +4,38 @@ import { BsArrowRight } from "react-icons/bs";
 import SliderComp from "../components/SliderComp";
 import Typewriter from "../utils/TypeWriter";
 import { Link } from "react-router-dom";
+import Calendar from "react-calendar";
+import FormatDate from "../utils/FormatDate";
+import InputDateComp from "../components/InputDateComp";
+
+import FasilitasComp from "../components/FasilitasComp";
+import Footer from "../components/FooterComp";
+import JenisKamarComp from "../components/JenisKamarComp";
+
+import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Select, SelectItem } from "@nextui-org/react";
+
+
+const jumlahs = [
+  { label: "1", value: "1" },
+  { label: "2", value: "2" },
+  { label: "3", value: "3" },
+  { label: "4", value: "4" },
+  { label: "5", value: "5" },
+  { label: "6", value: "6" },
+  { label: "7", value: "7" },
+  { label: "8", value: "8" },
+  { label: "9", value: "9" },
+  { label: "10", value: "10" },
+];
 
 function Home() {
   const [isMenu, setIsMenu] = useState(false);
+  const [value, onChange] = useState(new Date());
+  const [selectOpenDewasa, setSelectOpenDewasa] = useState(false);
+  const [selectOpenAnak, setSelectOpenAnak] = useState(false);
+  const [selectOpenKamar, setSelectOpenKamar] = useState(false);
+  const [jumlahDewasa, setJumlahDewasa] = useState("");
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   useEffect(function () {
     window.addEventListener("scroll", () => {
@@ -15,6 +44,11 @@ function Home() {
       } else {
         setIsMenu(false);
       }
+    });
+    window.addEventListener("scroll", () => {
+      setSelectOpenAnak(false);
+      setSelectOpenDewasa(false);
+      setSelectOpenKamar(false);
     });
   }, []);
   const [displayText, setDisplayText] = useState("");
@@ -37,47 +71,140 @@ function Home() {
     };
   }, []);
 
-  return (
-    <div className="flex flex-col gap-20 text-blue-900">
-      <NavbarComp kelas="absolute" setBg="false" />
-      <div className="bg-hero-pattern h-128 bg-cover bg-center bg-fixed transition-all relative">
-        <div className="font-bold text-5xl md:text-6xl flex justify-center items-center h-full text-white text-center">
-          {/* Selamat Datang di{" "}
-            <span className="bg-primary py-2 px-3"> Grand Atma Hotel</span> */}
-          <Typewriter>Seelamat Datang di Grand Atma Hotel</Typewriter>
-        </div>
-        <div className="absolute bottom-10 md:bottom-16 lg:bottom-28 left-0 right-0 text-center text-xl font-medium text-slate-100 font-mono">
-          {displayText}
-        </div>
-      </div>
-      <NavbarComp kelas={isMenu ? "fixed" : "hidden"} setBg="true" />
-      <div>
-        <p className="text-3xl text-center uppercase tracking-wide font-medium">
-          Kamar Utama Hotel
-        </p>
-        <Link to="/kamar">
-        <p className="flex items-center font-normal italic justify-center mt-3 mb-5">
-          Lihat Semua Kamar <BsArrowRight className="ms-1" />
-        </p></Link>
-        <SliderComp
-          src={[
-            "hotel/kamar-1.jpg",
-            "hotel/kamar-2.jpg",
-            "hotel/kamar-3.jpg",
-            "hotel/kamar-4.jpg",
-          ]}
-        />
-      </div>
-      <div className="h-max bg-blue-50">
-      <p className="text-3xl text-center uppercase tracking-wide font-normal mt-12">
-          Cek Ketersediaan
-        </p>
-      </div>
+  // function handleSelect(jenis){
+  //   if(jenis === 'dewasa'){
+  //     setSelectOpenDewasa(!selectOpenDewasa);
+  //     setSelectOpenAnak(false);
+  //   }else{
+  //     setSelectOpenAnak(!selectOpenAnak);
+  //     setSelectOpenDewasa(false);
+  //   }
+  // }
 
-      <div className="" style={{ height: "200vh" }}>
-        xyy
+  return (
+    <>
+      <div className="flex flex-col text-blue-900">
+        <NavbarComp kelas="absolute" setBg="false" />
+        <div className="bg-hero-pattern h-128 bg-cover bg-center bg-fixed transition-all relative">
+          <div className="font-bold text-5xl md:text-6xl flex justify-center items-center h-full text-white text-center">
+            {/* Selamat Datang di{" "}
+              <span className="bg-primary py-2 px-3"> Grand Atma Hotel</span> */}
+            <Typewriter>Seelamat Datang di Grand Atma Hotel</Typewriter>
+          </div>
+          <div className="absolute bottom-10 md:bottom-16 lg:bottom-28 left-0 right-0 text-center text-xl font-medium text-slate-100 font-mono">
+            {displayText}
+          </div>
+        </div>
+        <NavbarComp kelas={isMenu ? "fixed" : "hidden"} setBg="true" />
+        <div className="h-[250px] bg-yellow-800 text-white py-10 px-40 text-center space-y-6">
+          <p className="uppercase text-xl font-medium tracking-widest">Grand Atma Hotel: Pintu Gerbang Menuju Kenyamanan</p>
+          <p className="leading-relaxed">
+          Kami dengan penuh kebanggaan dan senang hati menyambut Anda di Grand Atma Hotel. Ini bukan hanya sebuah hotel, tetapi juga sebuah tempat yang kami katakan sebagai "rumah kedua Anda." Kami percaya bahwa setiap tamu adalah bagian penting dari keluarga kami, dan dengan setiap kunjungan Anda, kami berkomitmen untuk memberikan pengalaman yang tak terlupakan.
+          </p>
+        </div>
+        <div className="my-20">
+          <p className="text-3xl text-center uppercase tracking-wide font-medium">
+            Kamar Utama Hotel
+          </p>
+          <Link to="/kamar">
+            <p className="flex items-center font-normal italic justify-center mt-3 mb-5">
+              Lihat Semua Kamar <BsArrowRight className="ms-1" />
+            </p>
+          </Link>
+          {/* <SliderComp
+            src={[
+              "hotel/kamar-1.jpg",
+              "hotel/kamar-2.jpg",
+              "hotel/kamar-3.jpg",
+              "hotel/kamar-4.jpg",
+            ]}
+          /> */}
+          <JenisKamarComp/>
+        </div>
+        <div className="h-max bg-blue-50 px-10 py-16">
+          <p className="text-3xl text-center uppercase tracking-wide font-normal mb-9">
+            Cek Ketersediaan Kamar
+          </p>
+          <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 items-center">
+            <InputDateComp label="Check In" />
+            <InputDateComp label="Check Out" />
+            <Select
+              variant="bordered"
+              label="Jumlah Dewasa"
+              placeholder="Pilih Jumlah Dewasa"
+              onChange={(e) => setJumlahDewasa(e.target.value)}
+              className="bg-white rounded-xl"
+              isOpen={selectOpenDewasa}
+              onClick={() => setSelectOpenDewasa(!selectOpenDewasa)}
+            >
+              {jumlahs.map((jumlah) => (
+                <SelectItem
+                  key={jumlah.value}
+                  value={jumlah.value}
+                  onClick={() => setSelectOpenDewasa(!selectOpenDewasa)}
+                >
+                  {jumlah.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              variant="bordered"
+              label="Jumlah Anak"
+              placeholder="Pilih Jumlah Anak"
+              className="bg-white rounded-xl"
+              isOpen={selectOpenAnak}
+              onClick={() => setSelectOpenAnak(!selectOpenAnak)}
+            >
+              {jumlahs.map((jumlah) => (
+                <SelectItem
+                  key={jumlah.value}
+                  value={jumlah.value}
+                  onClick={() => setSelectOpenAnak(!selectOpenAnak)}
+                >
+                  {jumlah.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <Select
+              variant="bordered"
+              label="Jumlah Kamar"
+              placeholder="Pilih Jumlah Kamar"
+              className="bg-white rounded-xl"
+              isOpen={selectOpenKamar}
+              onClick={() => setSelectOpenKamar(!selectOpenKamar)}
+            >
+              {jumlahs.map((jumlah) => (
+                <SelectItem
+                  key={jumlah.value}
+                  value={jumlah.value}
+                  onClick={() => setSelectOpenKamar(!selectOpenKamar)}
+                >
+                  {jumlah.label}
+                </SelectItem>
+              ))}
+            </Select>
+            <Button className="bg-primary hover:bg-secondary text-slate-100 font-medium">
+              Cari
+            </Button>
+            {/* <Calendar onChange={onChange} value={value}/> */}
+          </div>
+          <p className="text-center mt-7 italic">
+            Ingin memesan kamar lebih dari 10?
+            <Link to="/kamar">
+              <span className="not-italic font-medium"> Hubungi Kami</span>
+            </Link>
+          </p>
+        </div>
+        <div className="my-20">
+          <FasilitasComp/>
+        </div>
+
+        {/* <div className="" style={{ height: "200vh" }}>
+          xyy
+        </div> */}
+        <Footer/>
       </div>
-    </div>
+    </>
   );
 }
 
