@@ -17,6 +17,10 @@ import {
   ModalHeader,
   ModalBody,
   Pagination,
+  Select,
+  SelectItem,
+  Textarea,
+  ModalFooter,
 } from "@nextui-org/react";
 // import {columns, users} from "./data";
 import { RiDeleteBin5Line } from "react-icons/ri";
@@ -27,6 +31,7 @@ import { useNavigate } from "react-router-dom";
 import { BiEditAlt } from "react-icons/bi";
 import { MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
+import FormatCurrency from "../../../utils/FormatCurrency";
 
 // const statusColorMap = {
 //   active: "success",
@@ -103,6 +108,11 @@ export default function KamarAdmin() {
     const [page, setPage] = React.useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [filterData, setFilterData] = useState("");
+  const [selectJenisKamar, setSelectJenisKamar] = useState(false);
+  const [selectNoLantai, setSelectNoLantai] = useState(false);
+  const [selectSmokingArea, setSelectSmokingArea] = useState(false);
+  const [dataJenisKamar, setDataJenisKamar] = useState([]);
+  const [openKonfirm, setOpenKonfirm] = useState(false);
 
   const pages = Math.ceil(dataKamar.length / rowsPerPage);
 
@@ -171,6 +181,39 @@ export default function KamarAdmin() {
         toast.error(error.response.data.message);
       });
   }
+  async function getDataJenisKamarAll() {
+    await axios
+      .get(`/jenis`, {
+        headers: {
+          "Content-Type": "application/json"
+        },
+      })
+      .then((response) => {
+        // res = response;
+        const { data } = response.data;
+        setDataJenisKamar(data);
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  }
+  const deleteData = async (id) => {
+  await axios
+    .delete(`/kamar/${id}`, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      toast.success(response.data.message);
+      getDataAll(token);
+    })
+    .catch((error) => {
+      toast.error(error.response.data.message);
+    });
+};
 
   useEffect(() => {
     getDataAll();
@@ -210,6 +253,23 @@ export default function KamarAdmin() {
       toast.error(response.data.message);
       // refreshPage();
     }
+  }
+  function clickBtnAdd() {
+    getDataJenisKamarAll();
+    setTempId("");
+    setTempData({});
+    onOpenChange(true)
+  }
+  function clickBtnEdit(data) {
+    setTempId("");
+    getDataJenisKamarAll();
+    getDataById(data.id);
+    setTempId(data.id);
+    onOpenChange(true);
+  }
+  function clickBtnDelete(data) {
+    setTempId(data.id);
+    setOpenKonfirm(true);
   }
 
   const renderCell = React.useCallback((data, columnKey) => {
@@ -277,7 +337,7 @@ export default function KamarAdmin() {
         return (
           <div className="flex flex-col">
             {/* <p className="text-bold text-sm capitalize">{cellValue}</p> */}
-            <p className="text-bold text-sm">{data.jenis_kamars.harga_dasar}</p>
+            <p className="text-bold text-sm">{data?.jenis_kamars?.harga_dasar && FormatCurrency(data?.jenis_kamars?.harga_dasar)}</p>
           </div>
         );
       case "aksi":
@@ -291,17 +351,13 @@ export default function KamarAdmin() {
             <Tooltip content="Edit data">
               <span
                 className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                onClick={() => {
-                  getDataById(data.id);
-                  setTempId(data.id);
-                  onOpenChange(true);
-                }}
+                onClick={() => clickBtnEdit(data)}
               >
                 <BiEditAlt />
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete data">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => clickBtnDelete(data)}>
                 <RiDeleteBin5Line />
               </span>
             </Tooltip>
@@ -357,7 +413,7 @@ export default function KamarAdmin() {
             </DropdownMenu>
           </Dropdown> */}
           <Button
-            onClick={() => {setTempId(""); setTempData({}); onOpenChange(true)}}
+            onClick={clickBtnAdd}
             size="md"
             className="bg-primary bg-opacity-90 text-gray-300 hover:text-white hover:bg-opacity-100 rounded-full ring-2 min-w-unit-0"
           >
@@ -373,7 +429,7 @@ export default function KamarAdmin() {
           Rows per page:
           <select
             className="bg-transparent outline-none text-default-400 text-small"
-              onChange={onRowsPerPageChange}
+            onChange={onRowsPerPageChange}
           >
             <option value="5">5</option>
             <option value="10">10</option>
@@ -381,7 +437,7 @@ export default function KamarAdmin() {
           </select>
         </label>
       </div>
-
+Nilai TempId = {tempId ? tempId : "Kosong ni"};
       <Table
         aria-label="Tabel Kamar"
         removeWrapper
@@ -395,17 +451,17 @@ export default function KamarAdmin() {
         }}
         bottomContent={
           <div className="flex w-full justify-center">
-            {!loadData && 
-            <Pagination
-              isCompact
-              showControls
-              showShadow
-              color="primary"
-              page={page}
-              total={pages}
-              onChange={(page) => setPage(page)}
-            />
-            }
+            {!loadData && (
+              <Pagination
+                isCompact
+                showControls
+                showShadow
+                color="primary"
+                page={page}
+                total={pages}
+                onChange={(page) => setPage(page)}
+              />
+            )}
           </div>
         }
       >
@@ -425,7 +481,6 @@ export default function KamarAdmin() {
           emptyContent={"Tidak ada Data Permintaan Layanan"}
           loadingContent={<Spinner />}
           loadingState={loadData}
-          
         >
           {(item) => (
             <TableRow key={item.id}>
@@ -445,83 +500,129 @@ export default function KamarAdmin() {
       >
         <ModalContent className="p-1 pb-3">
           <ModalHeader className="flex flex-col gap-1">
-            {tempId ? 'Ubah' : 'Tambah'} Kamar
+            {tempId ? "Ubah" : "Tambah"} Kamar
           </ModalHeader>
           <ModalBody>
             <div>
               <form
                 onSubmit={(e) => {
-                  {tempId ? handleSubmit(e, "update") : handleSubmit(e, "add")}
+                  {
+                    tempId ? handleSubmit(e, "update") : handleSubmit(e, "add");
+                  }
                 }}
                 className="grid gap-3"
               >
-                <Input
-                  type="text"
-                  variant="bordered"
-                  label="Jenis Kamar"
-                  value={tempData.id_jenis_kamar}
-                  isInvalid={validation.id_jenis_kamar ? true : false}
-                  errorMessage={validation.id_jenis_kamar}
-                  onChange={(e) => {
-                    setTempData({
-                      ...tempData,
-                      id_jenis_kamar: e.target.value,
-                    });
-                    validation.id_jenis_kamar = null;
-                  }}
-                />
-                <Input
-                  type="text"
-                  variant="bordered"
-                  label="Nomor Kamar"
-                  value={tempData.nomor_kamar}
-                  isInvalid={validation.nomor_kamar ? true : false}
-                  errorMessage={validation.nomor_kamar}
-                  onChange={(e) => {
-                    setTempData({ ...tempData, nomor_kamar: e.target.value });
-                    validation.nomor_kamar = null;
-                  }}
-                />
-                <Input
-                  type="text"
-                  variant="bordered"
-                  label="Jenis Bed"
-                  value={tempData.jenis_bed}
-                  isInvalid={validation.jenis_bed ? true : false}
-                  errorMessage={validation.jenis_bed}
-                  onChange={(e) => {
-                    setTempData({ ...tempData, jenis_bed: e.target.value });
-                    validation.jenis_bed = null;
-                  }}
-                />
-                <Input
-                  type="text"
-                  variant="bordered"
-                  label="Nomor Lantai"
-                  value={tempData.nomor_lantai}
-                  isInvalid={validation.nomor_lantai ? true : false}
-                  errorMessage={validation.nomor_lantai}
-                  onChange={(e) => {
-                    setTempData({ ...tempData, nomor_lantai: e.target.value });
-                    validation.nomor_lantai = null;
-                  }}
-                />
-                <Input
-                  type="text"
-                  variant="bordered"
-                  label="Smoking Area"
-                  value={tempData.smoking_area}
-                  isInvalid={validation.smoking_area ? true : false}
-                  errorMessage={validation.smoking_area}
-                  onChange={(e) => {
-                    setTempData({ ...tempData, smoking_area: e.target.value });
-                    validation.smoking_area = null;
-                  }}
-                />
-                <Input
-                  type="text"
+                <div className="flex gap-3">
+                  <Select
+                    variant="bordered"
+                    label="Jenis Kamar"
+                    placeholder="Pilih Jenis Kamar"
+                    selectedKeys={[tempData?.id_jenis_kamar ? tempData?.id_jenis_kamar.toString() : "null"]}
+                    isInvalid={validation.id_jenis_kamar ? true : false}
+                    errorMessage={validation.id_jenis_kamar}
+                    onChange={(e) => {
+                      setTempData({ ...tempData, id_jenis_kamar: e.target.value });
+                      validation.id_jenis_kamar = null;
+                    }}
+                    // className="bg-white rounded-xl"
+                    isOpen={selectJenisKamar}
+                    onClick={() => setSelectJenisKamar(!selectJenisKamar)}
+                  >
+                    {dataJenisKamar.map((jenis) => (
+                      <SelectItem
+                        key={jenis.id}
+                        value={jenis.id}
+                        onClick={() => setSelectJenisKamar(!selectJenisKamar)}
+                      >
+                        {jenis.jenis_kamar}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Select
+                    variant="bordered"
+                    label="Nomor Lantai"
+                    placeholder="Pilih Nomor Lantai"
+                    selectedKeys={[tempData?.nomor_lantai && tempData?.nomor_lantai.toString()]}
+                    isInvalid={validation.nomor_lantai ? true : false}
+                    errorMessage={validation.nomor_lantai}
+                    onChange={(e) => {
+                      setTempData({ ...tempData, nomor_lantai: e.target.value });
+                      validation.nomor_lantai = null;
+                    }}
+                    // className="bg-white rounded-xl"
+                    isOpen={selectNoLantai}
+                    onClick={() => setSelectNoLantai(!selectNoLantai)}
+                  >
+                    {[{no: "1"},{no: "2"},{no: "3"},{no: "5"},{no: "7"},{no: "8"},{no: "9"},{no: "12"}].map((lantai) => (
+                      <SelectItem
+                        key={lantai.no}
+                        value={lantai.no}
+                        onClick={() => setSelectNoLantai(!selectNoLantai)}
+                      >
+                        {lantai.no}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                  <Select
+                    variant="bordered"
+                    label="Smoking Area"
+                    placeholder="Pilih Smoking Area"
+                    selectedKeys={[tempData?.smoking_area && tempData?.smoking_area.toString()]}
+                    isInvalid={validation.smoking_area ? true : false}
+                    errorMessage={validation.smoking_area}
+                    onChange={(e) => {
+                      setTempData({ ...tempData, smoking_area: e.target.value });
+                      validation.smoking_area = null;
+                    }}
+                    // className="bg-white rounded-xl"
+                    isOpen={selectSmokingArea}
+                    onClick={() => setSelectSmokingArea(!selectSmokingArea)}
+                  >
+                    {[{no: "1", select: "Ya"},{no: "0", select: "Tidak"}].map((item) => (
+                      <SelectItem
+                        key={item.no}
+                        value={item.no}
+                        onClick={() => setSelectSmokingArea(!selectSmokingArea)}
+                      >
+                        {item.select}
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+                <div className="flex gap-3">
+                  <Input
+                    type="text"
+                    variant="bordered"
+                    label="Nomor Kamar"
+                    placeholder="Masukkan Nomor Kamar"
+                    value={tempData.nomor_kamar}
+                    isInvalid={validation.nomor_kamar ? true : false}
+                    errorMessage={validation.nomor_kamar}
+                    onChange={(e) => {
+                      setTempData({ ...tempData, nomor_kamar: e.target.value });
+                      validation.nomor_kamar = null;
+                    }}
+                  />
+                  <Input
+                    type="text"
+                    variant="bordered"
+                    label="Jenis Bed"
+                    value={tempData.jenis_bed}
+                    isInvalid={validation.jenis_bed ? true : false}
+                    errorMessage={validation.jenis_bed}
+                    onChange={(e) => {
+                      setTempData({ ...tempData, jenis_bed: e.target.value });
+                      validation.jenis_bed = null;
+                    }}
+                  />
+                </div>
+                
+                <Textarea
+                  key="bordered"
                   variant="bordered"
                   label="Catatan"
+                  labelPlacement="inside"
+                  placeholder="Masukkan Catatan (Opsional)"
                   value={tempData.catatan}
                   isInvalid={validation.catatan ? true : false}
                   errorMessage={validation.catatan}
@@ -530,7 +631,11 @@ export default function KamarAdmin() {
                     validation.catatan = null;
                   }}
                 />
-                <Button type="submit" isLoading={loadSubmit}>
+                <Button
+                  type="submit"
+                  isLoading={loadSubmit}
+                  className="bg-primary hover:bg-opacity-90 text-white"
+                >
                   Tambah Data
                 </Button>
               </form>
@@ -545,6 +650,42 @@ export default function KamarAdmin() {
               Tutup
             </Button>
           </ModalFooter> */}
+        </ModalContent>
+      </Modal>
+      <Modal
+        backdrop="opaque"
+        isOpen={openKonfirm}
+        onOpenChange={setOpenKonfirm}
+        placement="center"
+        isDismissable={false}
+        radius="2xl"
+        classNames={{
+          body: "py-6",
+          backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+          //   base: "border-[#292f46] ",
+          header: "bg-red-600 text-white",
+          //   footer: "border-t-[1px] border-[#292f46]",
+          closeButton: "hover:bg-white/5 active:bg-white/10",
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 "></ModalHeader>
+          <ModalBody>
+            <p>
+              Apakah yakin ingin menghapus data Kamar ini?
+            </p>
+          </ModalBody>
+          <ModalFooter>
+          <Button color="secondary" variant="light" onClick={()=> {setOpenKonfirm(!openKonfirm); setTempId("")}}>
+                  Tidak
+                </Button>
+            <Button
+              className="bg-red-500 text-white font-medium shadow-lg shadow-indigo-500/20"
+              onClick={() => {deleteData(tempId); setOpenKonfirm(false); setTempId("")}}
+            >
+              Ya
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
       <div className="h-[200vh]"></div>

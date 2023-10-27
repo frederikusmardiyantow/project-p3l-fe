@@ -16,10 +16,16 @@ import Register from "./pages/Customer/Auth/RegisterPage";
 import ResetPassword from "./pages/Customer/Auth/ResetPassword";
 import LoginAdminPage from "./pages/Pegawai/Auth/LoginAdminPage";
 import KamarAdmin from "./pages/Pegawai/Admin/KamarAdmin";
+import { useEffect } from "react";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/api";
 
 function App() {
+  
+useEffect(() => {
+  localStorage.getItem('apiKey');
+}, []);
+
   return (
     <BrowserRouter>
       <ScrollToTop/>
