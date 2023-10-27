@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useCallback, useEffect, useState } from "react";
 import {
   Table,
@@ -22,7 +21,6 @@ import {
   Textarea,
   ModalFooter,
 } from "@nextui-org/react";
-// import {columns, users} from "./data";
 import { RiDeleteBin5Line } from "react-icons/ri";
 import { GiStarFormation } from "react-icons/gi";
 import axios from "axios";
@@ -33,17 +31,6 @@ import { MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import FormatCurrency from "../../../utils/FormatCurrency";
 
-// const statusColorMap = {
-//   active: "success",
-//   paused: "danger",
-//   vacation: "warning",
-// };
-// const jenisKamars = [
-//   { name: "Superior", uid: "superior" },
-//   { name: "Double Deluxe", uid: "double_deluxe" },
-//   { name: "Executive Deluxe", uid: "executive_deluxe" },
-//   { name: "Junior Suite", uid: "junior_suite" },
-// ];
 const columns = [
   { name: "NOMOR KAMAR", uid: "nomor_kamar" },
   { name: "JENIS KAMAR", uid: "jenis_kamar" },
@@ -58,7 +45,6 @@ const columns = [
 
 const addData = async (request, token) => {
   let res;
-
   await axios
     .post("/kamar", request, {
       headers: {
@@ -77,7 +63,6 @@ const addData = async (request, token) => {
 };
 const updateData = async (id, request, token) => {
   let res;
-
   await axios
     .put(`/kamar/${id}`, request, {
       headers: {
@@ -96,23 +81,27 @@ const updateData = async (id, request, token) => {
 };
 
 export default function KamarAdmin() {
-  const [dataKamar, setDataKamar] = useState([]);
-  const token = localStorage.getItem("apiKey");
-  const navigation = useNavigate();
-  const [loadData, setLoadData] = useState(false);
-  const [isOpen, onOpenChange] = useState(false);
-  const [tempData, setTempData] = useState({});
-  const [loadSubmit, setLoadSubmit] = useState(false);
-  const [tempId, setTempId] = useState("");
-  const [validation, setValidation] = useState([]);
-    const [page, setPage] = React.useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [filterData, setFilterData] = useState("");
+  const [dataKamar, setDataKamar] = useState([]); //tuk nampung data from db kamar
+  const token = localStorage.getItem("apiKey"); //tuk dpetin token bearer di localstorage
+  const navigation = useNavigate(); //untuk navigasi
+  const [loadData, setLoadData] = useState(false); //tuk load data di tabel kamar
+  const [isOpen, onOpenChange] = useState(false); //tuk triger modal add/update data kamar
+  const [tempData, setTempData] = useState({}); //tuk nampung data inputan add/update kamar
+  const [loadSubmit, setLoadSubmit] = useState(false); //tuk load di button submit (add/update data)
+  const [tempId, setTempId] = useState(""); //tuk nampung data id yang dipilih tuk di edit
+  const [validation, setValidation] = useState([]); //tuk nampung data validasi yg didpt dari respon api
+  const [page, setPage] = React.useState(1); //tuk set pagination awal ketika halaman diload
+  const [rowsPerPage, setRowsPerPage] = useState(5); //tuk set nilai dari jumlah data yg ditampilin per page di pagination
+  const [filterData, setFilterData] = useState(""); //tuk filter data kamar
   const [selectJenisKamar, setSelectJenisKamar] = useState(false);
   const [selectNoLantai, setSelectNoLantai] = useState(false);
   const [selectSmokingArea, setSelectSmokingArea] = useState(false);
-  const [dataJenisKamar, setDataJenisKamar] = useState([]);
-  const [openKonfirm, setOpenKonfirm] = useState(false);
+  const [selectJenisBed, setSelectJenisBed] = useState(false);
+  const [dataJenisKamar, setDataJenisKamar] = useState([]); //tuk nampung data from db jenis kamar
+  const [openKonfirm, setOpenKonfirm] = useState(false); //tuk triger modal konfirmasi delete kamar
+
+  // buat bantu kl klik update, maka set jenis bed di inputan disabled. kalo jenis kamar di on chance, maka ubah ke dropdown lagi
+  const [pembantuInputanJenisBed, setPembantuInputanJenisBed] = useState(true);
 
   const pages = Math.ceil(dataKamar.length / rowsPerPage);
 
@@ -122,8 +111,12 @@ export default function KamarAdmin() {
     const jenisKamar = item?.jenis_kamars?.jenis_kamar.toLowerCase();
     const filter = filterData.toLowerCase();
 
-    return (noKamar.includes(filter) || jenisBed.includes(filter) || jenisKamar.includes(filter));
-  })
+    return (
+      noKamar.includes(filter) ||
+      jenisBed.includes(filter) ||
+      jenisKamar.includes(filter)
+    );
+  });
 
   const items = React.useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -163,7 +156,7 @@ export default function KamarAdmin() {
       });
     setLoadData(false);
   }
-  async function getDataById(id){
+  async function getDataById(id) {
     await axios
       .get(`/kamar/${id}`, {
         headers: {
@@ -173,7 +166,7 @@ export default function KamarAdmin() {
       })
       .then((response) => {
         // res = response;
-        const {data} = response.data;
+        const { data } = response.data;
         toast.success(response.data.message);
         setTempData(data);
       })
@@ -185,7 +178,7 @@ export default function KamarAdmin() {
     await axios
       .get(`/jenis`, {
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
       })
       .then((response) => {
@@ -199,24 +192,25 @@ export default function KamarAdmin() {
       });
   }
   const deleteData = async (id) => {
-  await axios
-    .delete(`/kamar/${id}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-    })
-    .then((response) => {
-      toast.success(response.data.message);
-      getDataAll(token);
-    })
-    .catch((error) => {
-      toast.error(error.response.data.message);
-    });
-};
+    await axios
+      .delete(`/kamar/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        toast.success(response.data.message);
+        getDataAll(token);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  };
 
   useEffect(() => {
     getDataAll();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSubmit(e, temp) {
@@ -258,9 +252,10 @@ export default function KamarAdmin() {
     getDataJenisKamarAll();
     setTempId("");
     setTempData({});
-    onOpenChange(true)
+    onOpenChange(true);
   }
   function clickBtnEdit(data) {
+    setPembantuInputanJenisBed(true);
     setTempId("");
     getDataJenisKamarAll();
     getDataById(data.id);
@@ -273,7 +268,6 @@ export default function KamarAdmin() {
   }
 
   const renderCell = React.useCallback((data, columnKey) => {
-
     switch (columnKey) {
       case "nomor_kamar":
         return (
@@ -337,7 +331,10 @@ export default function KamarAdmin() {
         return (
           <div className="flex flex-col">
             {/* <p className="text-bold text-sm capitalize">{cellValue}</p> */}
-            <p className="text-bold text-sm">{data?.jenis_kamars?.harga_dasar && FormatCurrency(data?.jenis_kamars?.harga_dasar)}</p>
+            <p className="text-bold text-sm">
+              {data?.jenis_kamars?.harga_dasar &&
+                FormatCurrency(data?.jenis_kamars?.harga_dasar)}
+            </p>
           </div>
         );
       case "aksi":
@@ -357,7 +354,10 @@ export default function KamarAdmin() {
               </span>
             </Tooltip>
             <Tooltip color="danger" content="Delete data">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50" onClick={() => clickBtnDelete(data)}>
+              <span
+                className="text-lg text-danger cursor-pointer active:opacity-50"
+                onClick={() => clickBtnDelete(data)}
+              >
                 <RiDeleteBin5Line />
               </span>
             </Tooltip>
@@ -366,6 +366,7 @@ export default function KamarAdmin() {
       default:
         return null;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -375,11 +376,13 @@ export default function KamarAdmin() {
           isClearable
           classNames={{
             base: "w-full sm:max-w-[44%]",
-            inputWrapper: "border-1",
+            inputWrapper: "border-1 h-12 border-default-500 bg-white",
           }}
-          placeholder="Cari berdasarkan"
+          placeholder="Cari berdasarkan Nomor Kamar, Jenis Kamar, dan Jenis Bed"
           size="sm"
-          startContent={<MdOutlineSearch className="text-default-300" />}
+          startContent={
+            <MdOutlineSearch className="text-default-500 w-6 h-6 " />
+          }
           value={filterData}
           variant="bordered"
           onChange={(e) => setFilterData(e.target.value)}
@@ -437,7 +440,7 @@ export default function KamarAdmin() {
           </select>
         </label>
       </div>
-Nilai TempId = {tempId ? tempId : "Kosong ni"};
+
       <Table
         aria-label="Tabel Kamar"
         removeWrapper
@@ -464,6 +467,7 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
             )}
           </div>
         }
+        className="bg-white py-3 px-2 shadow-md rounded-sm"
       >
         <TableHeader columns={columns}>
           {(column) => (
@@ -497,6 +501,11 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
         scrollBehavior="inside"
         placement="center"
         className="md:max-w-3xl"
+        onClose={() => {
+          setTempData({});
+          setTempId("");
+          setValidation([]);
+        }}
       >
         <ModalContent className="p-1 pb-3">
           <ModalHeader className="flex flex-col gap-1">
@@ -517,12 +526,21 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
                     variant="bordered"
                     label="Jenis Kamar"
                     placeholder="Pilih Jenis Kamar"
-                    selectedKeys={[tempData?.id_jenis_kamar ? tempData?.id_jenis_kamar.toString() : "null"]}
+                    selectedKeys={
+                      tempData?.id_jenis_kamar
+                        ? [tempData?.id_jenis_kamar.toString()]
+                        : []
+                    }
                     isInvalid={validation.id_jenis_kamar ? true : false}
                     errorMessage={validation.id_jenis_kamar}
                     onChange={(e) => {
-                      setTempData({ ...tempData, id_jenis_kamar: e.target.value });
+                      setTempData({
+                        ...tempData,
+                        id_jenis_kamar: e.target.value,
+                        jenis_bed: "",
+                      });
                       validation.id_jenis_kamar = null;
+                      setPembantuInputanJenisBed(false);
                     }}
                     // className="bg-white rounded-xl"
                     isOpen={selectJenisKamar}
@@ -542,18 +560,34 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
                     variant="bordered"
                     label="Nomor Lantai"
                     placeholder="Pilih Nomor Lantai"
-                    selectedKeys={[tempData?.nomor_lantai && tempData?.nomor_lantai.toString()]}
+                    selectedKeys={
+                      tempData?.nomor_lantai
+                        ? [tempData?.nomor_lantai.toString()]
+                        : []
+                    }
                     isInvalid={validation.nomor_lantai ? true : false}
                     errorMessage={validation.nomor_lantai}
                     onChange={(e) => {
-                      setTempData({ ...tempData, nomor_lantai: e.target.value });
+                      setTempData({
+                        ...tempData,
+                        nomor_lantai: e.target.value,
+                      });
                       validation.nomor_lantai = null;
                     }}
                     // className="bg-white rounded-xl"
                     isOpen={selectNoLantai}
                     onClick={() => setSelectNoLantai(!selectNoLantai)}
                   >
-                    {[{no: "1"},{no: "2"},{no: "3"},{no: "5"},{no: "7"},{no: "8"},{no: "9"},{no: "12"}].map((lantai) => (
+                    {[
+                      { no: "1" },
+                      { no: "2" },
+                      { no: "3" },
+                      { no: "5" },
+                      { no: "7" },
+                      { no: "8" },
+                      { no: "9" },
+                      { no: "12" },
+                    ].map((lantai) => (
                       <SelectItem
                         key={lantai.no}
                         value={lantai.no}
@@ -567,18 +601,28 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
                     variant="bordered"
                     label="Smoking Area"
                     placeholder="Pilih Smoking Area"
-                    selectedKeys={[tempData?.smoking_area && tempData?.smoking_area.toString()]}
+                    selectedKeys={
+                      tempData?.smoking_area
+                        ? [tempData?.smoking_area.toString()]
+                        : []
+                    }
                     isInvalid={validation.smoking_area ? true : false}
                     errorMessage={validation.smoking_area}
                     onChange={(e) => {
-                      setTempData({ ...tempData, smoking_area: e.target.value });
+                      setTempData({
+                        ...tempData,
+                        smoking_area: e.target.value,
+                      });
                       validation.smoking_area = null;
                     }}
                     // className="bg-white rounded-xl"
                     isOpen={selectSmokingArea}
                     onClick={() => setSelectSmokingArea(!selectSmokingArea)}
                   >
-                    {[{no: "1", select: "Ya"},{no: "0", select: "Tidak"}].map((item) => (
+                    {[
+                      { no: "1", select: "Ya" },
+                      { no: "0", select: "Tidak" },
+                    ].map((item) => (
                       <SelectItem
                         key={item.no}
                         value={item.no}
@@ -603,20 +647,61 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
                       validation.nomor_kamar = null;
                     }}
                   />
-                  <Input
-                    type="text"
-                    variant="bordered"
-                    label="Jenis Bed"
-                    value={tempData.jenis_bed}
-                    isInvalid={validation.jenis_bed ? true : false}
-                    errorMessage={validation.jenis_bed}
-                    onChange={(e) => {
-                      setTempData({ ...tempData, jenis_bed: e.target.value });
-                      validation.jenis_bed = null;
-                    }}
-                  />
+                  {tempId && pembantuInputanJenisBed ? (
+                    <Input
+                      disabled
+                      width={1 / 2}
+                      type="text"
+                      variant="bordered"
+                      label="Jenis Bed"
+                      value={tempData.jenis_bed}
+                      isInvalid={validation.jenis_bed ? true : false}
+                      errorMessage={validation.jenis_bed}
+                      onChange={(e) => {
+                        setTempData({ ...tempData, jenis_bed: e.target.value });
+                        validation.jenis_bed = null;
+                      }}
+                    />
+                  ) : (
+                    <Select
+                      variant="bordered"
+                      label="Jenis Bed"
+                      placeholder="Pilih Jenis Bed"
+                      selectedKeys={[
+                        tempData?.jenis_bed && tempData?.jenis_bed.toString(),
+                      ]}
+                      isInvalid={validation.jenis_bed ? true : false}
+                      errorMessage={validation.jenis_bed}
+                      onChange={(e) => {
+                        setTempData({ ...tempData, jenis_bed: e.target.value });
+                        validation.jenis_bed = null;
+                      }}
+                      // className="bg-white rounded-xl"
+                      isOpen={selectJenisBed}
+                      onClick={() => setSelectJenisBed(!selectJenisBed)}
+                    >
+                      {[
+                        { jenis_kamar: "1", bed: ["Double", "Twin"] },
+                        { jenis_kamar: "2", bed: ["Double", "Twin"] },
+                        { jenis_kamar: "3", bed: ["King"] },
+                        { jenis_kamar: "4", bed: ["King"] },
+                      ].map(
+                        (item) =>
+                          item.jenis_kamar === tempData.id_jenis_kamar &&
+                          item.bed.map((bed) => (
+                            <SelectItem
+                              key={bed}
+                              value={bed}
+                              onClick={() => setSelectJenisBed(!selectJenisBed)}
+                            >
+                              {bed}
+                            </SelectItem>
+                          ))
+                      )}
+                    </Select>
+                  )}
                 </div>
-                
+
                 <Textarea
                   key="bordered"
                   variant="bordered"
@@ -636,7 +721,7 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
                   isLoading={loadSubmit}
                   className="bg-primary hover:bg-opacity-90 text-white"
                 >
-                  Tambah Data
+                  {tempId ? "Ubah" : "Tambah"} Data
                 </Button>
               </form>
             </div>
@@ -671,24 +756,32 @@ Nilai TempId = {tempId ? tempId : "Kosong ni"};
         <ModalContent>
           <ModalHeader className="flex flex-col gap-1 "></ModalHeader>
           <ModalBody>
-            <p>
-              Apakah yakin ingin menghapus data Kamar ini?
-            </p>
+            <p>Apakah yakin ingin menghapus data Kamar ini?</p>
           </ModalBody>
           <ModalFooter>
-          <Button color="secondary" variant="light" onClick={()=> {setOpenKonfirm(!openKonfirm); setTempId("")}}>
-                  Tidak
-                </Button>
+            <Button
+              color="secondary"
+              variant="light"
+              onClick={() => {
+                setOpenKonfirm(!openKonfirm);
+                setTempId("");
+              }}
+            >
+              Tidak
+            </Button>
             <Button
               className="bg-red-500 text-white font-medium shadow-lg shadow-indigo-500/20"
-              onClick={() => {deleteData(tempId); setOpenKonfirm(false); setTempId("")}}
+              onClick={() => {
+                deleteData(tempId);
+                setOpenKonfirm(false);
+                setTempId("");
+              }}
             >
               Ya
             </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <div className="h-[200vh]"></div>
     </div>
   );
 }

@@ -138,7 +138,7 @@ function SidebarComp() {
   return (
     <div className="flex">
       <div
-        className={` sidebar ${
+        className={` ${
           open ? "w-72" : "w-20 "
         } bg-gray-900 min-h-screen p-5 pt-8 fixed top-0 left-0 duration-300 z-50`}
       >
@@ -211,9 +211,9 @@ function SidebarComp() {
         </Button>
       </div>
       <div
-        className={`flex-1 ${open ? "ms-20 md:ms-72" : "ms-20"} duration-300`}
+        className={`flex-1 ${open ? "ms-20 md:ms-72" : "ms-20"} duration-300 bg-blue-50 min-h-screen`}
       >
-        <div className="ring-2 ring-black h-16 w-full items-center flex p-5 uppercase font-medium tracking-normal justify-between">
+        <div className="ring-2 ring-black h-16 items-center flex p-5 uppercase font-medium tracking-normal justify-between">
           <p>
             Selamat Datang, anda masuk sebagai{" "}
             <span className="font-bold">

@@ -66,6 +66,7 @@ function NavbarComp({ kelas, setBg }) {
   ];
 
   useEffect(() => {
+    localStorage.getItem("apiKey")
     async function fetchData() {
       await axios
         .get(`/profile`, {
@@ -78,16 +79,17 @@ function NavbarComp({ kelas, setBg }) {
           .then((response) => {
             // res = response;
             const {data} = response.data;
-            const {nama_customer, email, jenis_identitas, no_identitas, no_telp, alamat, created_at, updated_at} = data;
+            // const {nama_customer, email, jenis_identitas, no_identitas, no_telp, alamat, created_at, updated_at} = data;
             setData({
-              nama_customer,
-              email,
-              jenis_identitas,
-              no_identitas, 
-              no_telp,
-              alamat,
-              created_at,
-              updated_at
+              data
+              // nama_customer,
+              // email,
+              // jenis_identitas,
+              // no_identitas, 
+              // no_telp,
+              // alamat,
+              // created_at,
+              // updated_at
             });
             toast.success(response.data.message);
           })
