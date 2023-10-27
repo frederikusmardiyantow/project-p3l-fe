@@ -5,25 +5,56 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useEffect, useState } from "react";
-import { Accordion, AccordionItem } from "@nextui-org/react";
+import {
+  Accordion,
+  AccordionItem,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+} from "@nextui-org/react";
 import { PiCubeTransparentFill } from "react-icons/pi";
 import FormatDateTime from "../../utils/FormatDateTime";
 import FormatCurrency from "../../utils/FormatCurrency";
 
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody
+} from "@nextui-org/react";
+import FormatDate from "../../utils/FormatDate";
 
 function RiwayatReservasi() {
   const [data, setData] = useState({});
   const token = localStorage.getItem("apiKey");
   const navigation = useNavigate();
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const [isOpen, onOpenChange] = useState(false);
+  const [dataDetail, setDataDetail] = useState({});
+
+  async function detailPemesanan(id) {
+    await axios
+      .get(`/transaksi/detail/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // res = response;
+        const { data } = response.data;
+        console.log(data);
+        setDataDetail(data);
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  }
 
   useEffect(() => {
-    if (!token) {
-      // Token tidak ada, mungkin pengguna belum login, arahkan ke halaman login.
-      navigation("/login");
-      return;
-    }
     async function fetchData() {
       await axios
         .get(`/transaksi`, {
@@ -44,6 +75,11 @@ function RiwayatReservasi() {
     }
     fetchData();
   }, [navigation, token]);
+
+  async function handleClickDetail(id) {
+    onOpenChange(true);
+    await detailPemesanan(id);
+  }
 
   return (
     <>
@@ -82,7 +118,10 @@ function RiwayatReservasi() {
                     (tr) =>
                       (tr.status === "Lunas" || tr.status === "Out") && (
                         <div
-                          className="h-30 ring-1 ring-slate-500 text-gray-700 bg-blue-100 hover:bg-blue-50 rounded-md p-4 m-1 mb-4" onClick={onOpen}
+                          className="h-30 ring-1 ring-slate-500 text-gray-700 bg-blue-100 hover:bg-blue-50 rounded-md p-4 m-1 mb-4"
+                          onClick={() => {
+                            handleClickDetail(tr.id);
+                          }}
                           key={tr.id}
                         >
                           <div className="uppercase font-medium text-lg border-b-2 border-solid border-gray-600 pb-3 flex justify-between">
@@ -192,7 +231,9 @@ function RiwayatReservasi() {
                       tr.status === "Menunggu Pembayaran" && (
                         <div
                           className="h-30 ring-1 ring-slate-500 text-gray-700 bg-blue-100 hover:bg-blue-50 rounded-md p-4 m-1 mb-4"
-                          key={tr.id}
+                          key={tr.id} onClick={() => {
+                            handleClickDetail(tr.id);
+                          }}
                         >
                           <div className="uppercase font-medium text-lg border-b-2 border-solid border-gray-600 pb-3 flex justify-between">
                             <p className="flex items-center gap-1">
@@ -393,95 +434,105 @@ function RiwayatReservasi() {
         placement="center"
         className="md:max-w-3xl"
       >
-        <ModalContent>
-          {(onClose) => (
-            <>
-              <ModalHeader className="flex flex-col gap-1">
-                Detail Transaksi Pemesanan
-              </ModalHeader>
-              <ModalBody>
+        <ModalContent className="p-1 pb-3">
+          <ModalHeader className="flex flex-col gap-1">
+            Detail Transaksi Pemesanan
+          </ModalHeader>
+          <ModalBody>
+            <div className="space-y-2">
+              <p>
+                Tanggal Pesan :{" "}
+                {dataDetail?.waktu_reservasi &&
+                  FormatDateTime(new Date(dataDetail?.waktu_reservasi))}
+              </p>
+              {dataDetail.id_booking && <p>ID Booking : {dataDetail?.id_booking}</p>}
+              <p>Status : {dataDetail.status}</p>
+              {dataDetail.id_fo && (
                 <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
+                  Nama <i>Front Office</i> : {dataDetail.fo.nama_pegawai}
                 </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                  eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                  eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
-                <p>
-                  Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit
-                  duis sit officia eiusmod Lorem aliqua enim laboris do dolor
-                  eiusmod. Et mollit incididunt nisi consectetur esse laborum
-                  eiusmod pariatur proident Lorem eiusmod et. Culpa deserunt
-                  nostrud ad veniam. Lorem ipsum dolor sit amet, consectetur
-                  adipiscing elit. Nullam pulvinar risus non risus hendrerit
-                  venenatis. Pellentesque sit amet hendrerit risus, sed
-                  porttitor quam. Magna exercitation reprehenderit magna aute
-                  tempor cupidatat consequat elit dolor adipisicing. Mollit
-                  dolor eiusmod sunt ex incididunt cillum quis. Velit duis sit
-                  officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. Et
-                  mollit incididunt nisi consectetur esse laborum eiusmod
-                  pariatur proident Lorem eiusmod et. Culpa deserunt nostrud ad
-                  veniam.
-                </p>
-                <p>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit.
-                  Nullam pulvinar risus non risus hendrerit venenatis.
-                  Pellentesque sit amet hendrerit risus, sed porttitor quam.
-                </p>
-                <p>
-                  Magna exercitation reprehenderit magna aute tempor cupidatat
-                  consequat elit dolor adipisicing. Mollit dolor eiusmod sunt ex
-                  incididunt cillum quis. Velit duis sit officia eiusmod Lorem
-                  aliqua enim laboris do dolor eiusmod. Et mollit incididunt
-                  nisi consectetur esse laborum eiusmod pariatur proident Lorem
-                  eiusmod et. Culpa deserunt nostrud ad veniam.
-                </p>
-                <p>
-                  Mollit dolor eiusmod sunt ex incididunt cillum quis. Velit
-                  duis sit officia eiusmod Lorem aliqua enim laboris do dolor
-                  eiusmod. Et mollit incididunt nisi consectetur esse laborum
-                  eiusmod pariatur proident Lorem eiusmod et. Culpa deserunt
-                  nostrud ad veniam. Lorem ipsum dolor sit amet, consectetur
-                  adipiscing elit. Nullam pulvinar risus non risus hendrerit
-                  venenatis. Pellentesque sit amet hendrerit risus, sed
-                  porttitor quam. Magna exercitation reprehenderit magna aute
-                  tempor cupidatat consequat elit dolor adipisicing. Mollit
-                  dolor eiusmod sunt ex incididunt cillum quis. Velit duis sit
-                  officia eiusmod Lorem aliqua enim laboris do dolor eiusmod. Et
-                  mollit incididunt nisi consectetur esse laborum eiusmod
-                  pariatur proident Lorem eiusmod et. Culpa deserunt nostrud ad
-                  veniam.
-                </p>
-              </ModalBody>
-              <ModalFooter>
-                <Button color="danger" variant="light" onPress={onClose}>
-                  Tutup
-                </Button>
-              </ModalFooter>
-            </>
-          )}
+              )}
+              <p>Jumlah Dewasa : {dataDetail.jumlah_dewasa}</p>
+              <p>Jumlah Anak-anak : {dataDetail.jumlah_anak_anak}</p>
+              <p>
+                Tanggal <i>Check in</i> :{" "}
+                {dataDetail?.waktu_check_in &&
+                  FormatDate(new Date(dataDetail?.waktu_check_in))}
+              </p>
+              <p>
+                Tanggal <i>Check out</i> :{" "}
+                {dataDetail?.waktu_check_out &&
+                  FormatDate(new Date(dataDetail?.waktu_check_out))}
+              </p>
+              <p>Total Harga Kamar : {dataDetail?.total_harga && FormatCurrency(dataDetail?.total_harga)}</p>
+              <div className="space-y-4 !mb-5">
+                <p>Pemesanan Kamar :</p>
+                <Table aria-label="Tabel Permintaan Layanan">
+                  <TableHeader>
+                    <TableColumn>JENIS KAMAR</TableColumn>
+                    <TableColumn>KAPASITAS</TableColumn>
+                    <TableColumn>HARGA PER MALAM</TableColumn>
+                    {/* <TableColumn>JUMLAH MALAM</TableColumn>
+                    <TableColumn>TOTAL HARGA</TableColumn> */}
+                    <TableColumn>NOMOR KAMAR</TableColumn>
+                    <TableColumn>JENIS BED</TableColumn>
+                    <TableColumn>AREA MEROKOK</TableColumn>
+                    
+                  </TableHeader>
+                  <TableBody>
+                    {dataDetail?.trx_kamars &&
+                      dataDetail.trx_kamars.map((tl) => (
+                        <TableRow key={tl.id}>
+                          <TableCell>{tl.jenis_kamars.jenis_kamar}</TableCell>
+                          <TableCell>{tl.jenis_kamars.kapasitas} Dewasa</TableCell>
+                          <TableCell>{tl?.harga_per_malam && FormatCurrency(tl?.harga_per_malam)}</TableCell>
+                          {/* <TableCell>{tl.jumlah_malam}</TableCell>
+                          <TableCell>{(tl.harga_per_malam * tl.jumlah_malam)}</TableCell> */}
+                          <TableCell>{tl.kamars !== null ? tl?.kamars.nomor_kamar : '-'}</TableCell>
+                          <TableCell>{tl.kamars !== null ? tl?.kamars.jenis_bed : '-'}</TableCell>
+                          <TableCell>{tl.kamars !== null ? tl?.kamars.smoking_area : '-'}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <div className="space-y-4">
+                <p>Permintaan Layanan :</p>
+                <Table aria-label="Tabel Permintaan Layanan">
+                  <TableHeader>
+                    <TableColumn>NAMA LAYANAN</TableColumn>
+                    <TableColumn>JUMLAH</TableColumn>
+                    <TableColumn>SATUAN</TableColumn>
+                    <TableColumn>TOTAL HARGA</TableColumn>
+                    <TableColumn>WAKTU PEMAKAIAN</TableColumn>
+                    <TableColumn>KETERANGAN</TableColumn>
+                  </TableHeader>
+                  <TableBody emptyContent={"Tidak ada Data Permintaan Layanan"}>
+                    {dataDetail?.trx_layanans &&
+                      dataDetail.trx_layanans.map((tl) => (
+                        <TableRow key={tl.id}>
+                          <TableCell>{tl.layanans.nama_layanan}</TableCell>
+                          <TableCell>{tl.jumlah}</TableCell>
+                          <TableCell>{tl.layanans.satuan}</TableCell>
+                          <TableCell>{tl?.total_harga && FormatCurrency(tl?.total_harga)}</TableCell>
+                          <TableCell>{tl?.waktu_pemakaian && FormatDateTime(new Date(tl?.waktu_pemakaian))}</TableCell>
+                          <TableCell>{tl.layanans.keterangan}</TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </ModalBody>
+          {/* <ModalFooter>
+            <Button
+              color="danger"
+              variant="light"
+              onClick={() => onOpenChange(false)}
+            >
+              Tutup
+            </Button>
+          </ModalFooter> */}
         </ModalContent>
       </Modal>
     </>

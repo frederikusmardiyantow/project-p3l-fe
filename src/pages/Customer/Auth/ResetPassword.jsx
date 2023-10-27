@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
-import InputComp from "../../components/InputComp";
+import InputComp from "../../../components/InputComp";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { BiSolidLockAlt } from "react-icons/bi";
@@ -118,8 +118,7 @@ function ResetPassword() {
                 </div>
               </Link> */}
               <p className="my-3 text-center text-slate-300">
-                {/* masukkan email anda untuk mereset password.  */}
-                {token} 
+                masukkan password baru Anda. 
               </p>
               <form className="flex flex-col gap-3 px-3 pt-3">
               <InputComp

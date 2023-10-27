@@ -62,12 +62,12 @@ function JenisKamarComp() {
                         <div className="text-lg font-bold leading-6">Kamar {jk.jenis_kamar} dengan 1 Tempat Tidur</div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2"><FiUsers/> {jk.kapasitas} Orang</div>
-                            <div className="flex items-center"><IoMdResize className="mr-2"/>{jk.ukuran_kamar} m<sup>3</sup></div>
+                            <div className="flex items-center"><IoMdResize className="mr-2"/>{jk.ukuran_kamar} m<sup>2</sup></div>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2"><BiBed/> 1 x Tempat Tidur Queen</div>
                         </div>
-                        <div className="italic !mt-3"><Link to="/" className="flex items-center gap-1">Lihat selengkapnya <BsArrowRight/></Link></div>
+                        <div className="italic !mt-3"><Link to={`/kamar/${jk.id}`} className="flex items-center gap-1">Lihat selengkapnya <BsArrowRight/></Link></div>
                         <div className="flex justify-center fixed bottom-10 left-0 w-full">
                             <Button className="uppercase bg-primary text-white font-medium rounded-md w-3/4 text-center !mt-5 tracking-widest">Pesan Sekarang!</Button>
                         </div>

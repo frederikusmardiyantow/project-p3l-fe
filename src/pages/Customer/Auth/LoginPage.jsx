@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import InputComp from "../../components/InputComp";
+import InputComp from "../../../components/InputComp";
 import { BiSolidLockAlt } from "react-icons/bi";
 import { BsFillPersonFill } from "react-icons/bs";
 import { Button } from "@nextui-org/react";

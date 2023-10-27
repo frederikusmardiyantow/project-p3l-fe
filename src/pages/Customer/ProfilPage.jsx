@@ -73,11 +73,6 @@ function ProfilPage() {
   const navigation = useNavigate();
 
   useEffect(() => {
-    if (!token) {
-      // Token tidak ada, mungkin pengguna belum login, arahkan ke halaman login.
-      navigation("/login");
-      return;
-    }
 
     async function fetchData() {
       await axios
@@ -114,7 +109,6 @@ function ProfilPage() {
         })
         .catch((error) => {
           navigation("/login");
-          console.log(error.response);
           toast.error(error.response.data.message);
         });
     }

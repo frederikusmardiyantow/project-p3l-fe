@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import InputComp from "../../components/InputComp";
+import InputComp from "../../../components/InputComp";
 import { BiSolidLockAlt } from "react-icons/bi";
 import { MdEmail } from "react-icons/md";
 import { FaIdCard, FaPhoneSquareAlt } from "react-icons/fa";

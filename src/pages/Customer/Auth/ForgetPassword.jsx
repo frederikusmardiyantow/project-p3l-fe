@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import InputComp from "../../components/InputComp";
+import InputComp from "../../../components/InputComp";
 import { BsArrowLeftShort, BsFillPersonFill } from "react-icons/bs";
 import { useState } from "react";
 import axios from "axios";

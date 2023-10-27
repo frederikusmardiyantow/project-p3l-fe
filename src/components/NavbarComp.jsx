@@ -22,6 +22,7 @@ import { LuHistory } from "react-icons/lu";
 import { BiSolidHelpCircle, BiSolidLogOut } from "react-icons/bi";
 import { toast } from "react-toastify";
 import axios from "axios";
+import assets from "../assets";
 
 const logOut = async (request, token) => {
   let res = null;
@@ -65,11 +66,6 @@ function NavbarComp({ kelas, setBg }) {
   ];
 
   useEffect(() => {
-    if (!apiKey) {
-      // Token tidak ada, mungkin pengguna belum login, arahkan ke halaman login.
-      return;
-    }
-
     async function fetchData() {
       await axios
         .get(`/profile`, {
@@ -141,7 +137,7 @@ function NavbarComp({ kelas, setBg }) {
         />
         <NavbarBrand className="w-full">
           <Link to="/">
-            <img src={logo} alt="logo" className="h-12 max-w-none" />
+            <img src={assets.LOGOGAHhWhite} alt="logo" className="h-12 max-w-none" />
           </Link>
         </NavbarBrand>
       </NavbarContent>

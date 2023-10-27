@@ -2,7 +2,7 @@ import assets from "../assets";
 
 function Footer() {
   return (
-    <footer className="bg-primary text-white">
+    <footer className="bg-primary text-white mt-20">
       <div className="p-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="col-span-1"></div>
