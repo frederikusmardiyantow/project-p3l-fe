@@ -99,11 +99,9 @@ export default function KamarAdmin() {
   const [selectJenisBed, setSelectJenisBed] = useState(false);
   const [dataJenisKamar, setDataJenisKamar] = useState([]); //tuk nampung data from db jenis kamar
   const [openKonfirm, setOpenKonfirm] = useState(false); //tuk triger modal konfirmasi delete kamar
+  const [pembantuInputanJenisBed, setPembantuInputanJenisBed] = useState(true); // buat bantu kl klik update, maka set jenis bed di inputan disabled. kalo jenis kamar di on chance, maka ubah ke dropdown lagi
 
-  // buat bantu kl klik update, maka set jenis bed di inputan disabled. kalo jenis kamar di on chance, maka ubah ke dropdown lagi
-  const [pembantuInputanJenisBed, setPembantuInputanJenisBed] = useState(true);
-
-  const pages = Math.ceil(dataKamar.length / rowsPerPage);
+  const pages = Math.ceil(dataKamar.length / rowsPerPage); //tuk membagi data yg tampil ditiap halaman
 
   const dataFilter = dataKamar?.filter((item) => {
     const noKamar = item?.nomor_kamar.toString().toLowerCase();
@@ -151,7 +149,7 @@ export default function KamarAdmin() {
         toast.success(response.data.message);
       })
       .catch((error) => {
-        navigation("/login");
+        navigation("/loginAdm");
         toast.error(error.response.data.message);
       });
     setLoadData(false);
@@ -201,7 +199,7 @@ export default function KamarAdmin() {
       })
       .then((response) => {
         toast.success(response.data.message);
-        getDataAll(token);
+        getDataAll();
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -237,7 +235,7 @@ export default function KamarAdmin() {
     }
     setLoadSubmit(false);
     if (response.data.status === "T") {
-      getDataAll(token);
+      getDataAll();
       toast.success(response.data.message);
       setTempData({});
       setTempId("");
@@ -370,7 +368,7 @@ export default function KamarAdmin() {
   }, []);
 
   return (
-    <div>
+    <>
       <div className="flex justify-between items-center gap-5 my-5">
         <Input
           isClearable
@@ -473,7 +471,7 @@ export default function KamarAdmin() {
           {(column) => (
             <TableColumn
               key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
+              align={column.uid === "aksi" ? "center" : "start"}
             >
               {column.name}
             </TableColumn>
@@ -782,6 +780,6 @@ export default function KamarAdmin() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </div>
+    </>
   );
 }

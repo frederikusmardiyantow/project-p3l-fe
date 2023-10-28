@@ -17,6 +17,10 @@ import ResetPassword from "./pages/Customer/Auth/ResetPassword";
 import LoginAdminPage from "./pages/Pegawai/Auth/LoginAdminPage";
 import KamarAdmin from "./pages/Pegawai/Admin/KamarAdmin";
 import { useEffect } from "react";
+import SeasonSM from "./pages/Pegawai/SM/SeasonSM";
+import TarifSM from "./pages/Pegawai/SM/TarifSM";
+import FasilitasBerbayarSM from "./pages/Pegawai/SM/FasilitasBerbayarSM";
+import CustomerSM from "./pages/Pegawai/SM/CustomerSM";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/api";
 
@@ -45,6 +49,10 @@ useEffect(() => {
         <Route path="admin/" element={<SidebarComp/>}>
           <Route path="dashboard" element={<Dashboard/>}/>
           <Route path="kamar" element={<KamarAdmin/>}/>
+          <Route path="season" element={<SeasonSM/>}/>
+          <Route path="tarif" element={<TarifSM/>}/>
+          <Route path="fasilitas" element={<FasilitasBerbayarSM/>}/>
+          <Route path="customer" element={<CustomerSM/>}/>
         </Route>
         {/* <Route path="admin/*" element={
           <SidebarComp>

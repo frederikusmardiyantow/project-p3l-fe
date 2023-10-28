@@ -108,8 +108,8 @@ function ProfilPage() {
           toast.success(response.data.message);
         })
         .catch((error) => {
-          navigation("/login");
           toast.error(error.response.data.message);
+          navigation("/");
         });
     }
     fetchData();
