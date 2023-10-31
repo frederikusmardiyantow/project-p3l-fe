@@ -61,7 +61,7 @@ const addData = async (request, token) => {
 function SeasonSM() {
   const [dataSeason, setDataSeason] = useState([]);
   const [loadData, setLoadData] = useState(false);
-  const token = localStorage.getItem("apiKey");
+  const token = localStorage.getItem("apiKeyAdmin");
   const navigation = useNavigate();
   const [tempData, setTempData] = useState({});
   const [loadSubmit, setLoadSubmit] = useState(false);
@@ -73,8 +73,8 @@ function SeasonSM() {
   const [selectJenisSeason, setSelectJenisSeason] = useState(false);
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [tempMulai, setTempMulai] = useState({});
-  const [tempSelesai, setTempSelesai] = useState({});
+  const [sdhInputTglMulai, setSdhInputTglMulai] = useState(false);
+  const [sdhInputTglSelesai, setSdhInputTglSelesai] = useState(false);
 
   const dataFilter = dataSeason?.filter((item) => {
     const namaSeason = item?.nama_season.toLowerCase();
@@ -170,7 +170,7 @@ function SeasonSM() {
   async function handleSubmit(e, temp) {
     let response;
     e.preventDefault();
-    setTempData({ ...tempData, tgl_mulai: tempMulai.tanggal+' '+tempMulai.jam, tgl_selesai: tempSelesai.tanggal+' '+tempSelesai.jam});
+    // setTempData({ ...tempData, tgl_mulai: tempMulai.tanggal+' '+tempMulai.jam, tgl_selesai: tempSelesai.tanggal+' '+tempSelesai.jam});
     setLoadSubmit(true);
     if (temp == "add") {
       response = await addData(
@@ -209,6 +209,8 @@ function SeasonSM() {
     onOpenChange(true);
   }
   function clickBtnEdit(data) {
+    setSdhInputTglMulai(true);
+    setSdhInputTglSelesai(true);
     setTempId("");
     getDataById(data.id);
     setTempId(data.id);
@@ -278,22 +280,43 @@ function SeasonSM() {
                 <GiBeastEye />
               </span>
             </Tooltip> */}
-            <Tooltip content="Edit data">
+            {(new Date(data.tgl_mulai) < new Date()) || ((new Date(data.tgl_mulai) - new Date()) < 5184000000) ? (
+              <>
+              <Tooltip content="Tidak bisa edit data, karena selisih dengan tanggal mulai < 2 bulan">
               <span
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                className="text-lg text-gray-400 cursor-pointer opacity-75 active:opacity-50"
+              >
+                <BiEditAlt />
+              </span>
+            </Tooltip>
+                <Tooltip color="default" content="Tidak bisa hapus data, karena selisih dengan tanggal mulai < 2 bulan">
+                <span
+                  className="text-lg text-gray-400 cursor-pointer opacity-75 active:opacity-50"
+                >
+                  <RiDeleteBin5Line />
+                </span>
+              </Tooltip>
+              </>
+            ) : (
+              <>
+              <Tooltip content="Edit data">
+              <span
+                className="text-lg text-primary cursor-pointer active:opacity-50"
                 onClick={() => clickBtnEdit(data)}
               >
                 <BiEditAlt />
               </span>
             </Tooltip>
-            <Tooltip color="danger" content="Delete data">
-              <span
-                className="text-lg text-danger cursor-pointer active:opacity-50"
-                onClick={() => clickBtnDelete(data)}
-              >
-                <RiDeleteBin5Line />
-              </span>
-            </Tooltip>
+                <Tooltip color="danger" content="Delete data">
+                  <span
+                    className="text-lg text-danger cursor-pointer active:opacity-50"
+                    onClick={() => clickBtnDelete(data)}
+                  >
+                    <RiDeleteBin5Line />
+                  </span>
+                </Tooltip>
+              </>
+            )}
           </div>
         );
       default:
@@ -354,6 +377,8 @@ function SeasonSM() {
       <Table
         aria-label="Tabel Season"
         removeWrapper
+        color="default"
+        selectionMode="single"
         classNames={{
           th: [
             "bg-transparent",
@@ -392,7 +417,7 @@ function SeasonSM() {
         <TableBody
           items={items}
           isLoading={loadData}
-          emptyContent={"Tidak ada Data Permintaan Layanan"}
+          emptyContent={!loadData ? "Tidak ada Data Permintaan Layanan" : "  "}
           loadingContent={<Spinner />}
           loadingState={loadData}
         >
@@ -415,6 +440,7 @@ function SeasonSM() {
           setTempData({});
           setTempId("");
           setValidation([]);
+          setSdhInputTglMulai(false);
         }}
       >
         <ModalContent className="p-1 pb-3">
@@ -490,20 +516,23 @@ function SeasonSM() {
                     isInvalid={validation.tgl_mulai ? true : false}
                     errorMessage={validation.tgl_mulai}
                     onChange={(e) => {
-                      setTempMulai({ ...tempMulai, tanggal: e.target.value });
+                      // tgl_mulai dicek dlu. kl null, maka langsung set e.tagret nya ke tgl_mulai. tp kalo tgl_mulai sdh ada isi, maka hanya ganti pada bagian tanggalny aja. wktunya tetap
+                      setTempData({ ...tempData, tgl_mulai: tempData?.tgl_mulai ? e.target.value+' '+tempData?.tgl_mulai.split(' ')[1] : e.target.value });
                       validation.tgl_mulai = null;
+                      setSdhInputTglMulai(true);
                     }}
                   />
                   <Input
                     type="time"
+                    isDisabled={!sdhInputTglMulai}
                     variant="bordered"
                     label="Jam Mulai"
                     placeholder="Masukkan Jam Mulai"
-                    value={tempData?.tgl_mulai && tempData?.tgl_mulai.split(' ')[1]}
+                    value={tempData?.tgl_mulai ? tempData?.tgl_mulai.split(' ')[1] : ""}
                     isInvalid={validation.tgl_mulai ? true : false}
                     errorMessage={validation.tgl_mulai}
                     onChange={(e) => {
-                        setTempMulai({ ...tempMulai, jam: e.target.value+':00' });
+                      setTempData({ ...tempData, tgl_mulai: tempData.tgl_mulai.split(' ')[0]+' '+e.target.value+':00' });
                       validation.tgl_mulai = null;
                     }}
                   />
@@ -516,20 +545,23 @@ function SeasonSM() {
                     isInvalid={validation.tgl_selesai ? true : false}
                     errorMessage={validation.tgl_selesai}
                     onChange={(e) => {
-                      setTempSelesai({ ...tempSelesai, tanggal: e.target.value });
+                      // tgl_selesai dicek dlu. kl null, maka langsung set e.tagret nya ke tgl_selesai. tp kalo tgl_selesai sdh ada isi, maka hanya ganti pada bagian tanggalny aja. wktunya tetap
+                      setTempData({ ...tempData, tgl_selesai: tempData?.tgl_selesai ? e.target.value+' '+tempData?.tgl_selesai.split(' ')[1] : e.target.value });
                       validation.tgl_selesai = null;
+                      setSdhInputTglSelesai(true);
                     }}
                   />
                   <Input
                     type="time"
+                    isDisabled={!sdhInputTglSelesai}
                     variant="bordered"
-                    label="Jam Berakhir"
-                    placeholder="Masukkan Jam Berakhir"
-                    value={tempData?.tgl_selesai && tempData?.tgl_selesai.split(' ')[1]}
+                    label="Jam Mulai"
+                    placeholder="Masukkan Jam Mulai"
+                    value={tempData?.tgl_selesai ? tempData?.tgl_selesai.split(' ')[1] : ""}
                     isInvalid={validation.tgl_selesai ? true : false}
                     errorMessage={validation.tgl_selesai}
                     onChange={(e) => {
-                        setTempSelesai({ ...tempSelesai, jam: e.target.value+':00' });
+                      setTempData({ ...tempData, tgl_selesai: tempData.tgl_selesai.split(' ')[0]+' '+e.target.value+':00' });
                       validation.tgl_selesai = null;
                     }}
                   />

@@ -36,7 +36,8 @@ function LoginAdminPage() {
     setLoad(false);
     if (response.data.status === "T" && response.data.data.user.id_role) {
       toast.success(response.data.message);
-      localStorage.setItem("apiKey", response.data.data.authorization.token);
+      localStorage.setItem("apiKeyAdmin", response.data.data.authorization.token);
+      localStorage.setItem("idPgw", response.data.data.user.id);
       navigation("/admin/dashboard");
     } else {
       //   setValidation(response.data.message);

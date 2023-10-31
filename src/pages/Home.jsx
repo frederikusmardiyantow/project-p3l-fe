@@ -1,18 +1,15 @@
 import { useEffect, useState } from "react";
 import NavbarComp from "../components/NavbarComp";
 import { BsArrowRight } from "react-icons/bs";
-import SliderComp from "../components/SliderComp";
 import Typewriter from "../utils/TypeWriter";
 import { Link } from "react-router-dom";
-import Calendar from "react-calendar";
-import FormatDate from "../utils/FormatDate";
 import InputDateComp from "../components/InputDateComp";
 
 import FasilitasComp from "../components/FasilitasComp";
 import Footer from "../components/FooterComp";
 import JenisKamarComp from "../components/JenisKamarComp";
 
-import {Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, useDisclosure, Select, SelectItem } from "@nextui-org/react";
+import { Button, Select, SelectItem } from "@nextui-org/react";
 
 
 const jumlahs = [
@@ -30,12 +27,10 @@ const jumlahs = [
 
 function Home() {
   const [isMenu, setIsMenu] = useState(false);
-  const [value, onChange] = useState(new Date());
   const [selectOpenDewasa, setSelectOpenDewasa] = useState(false);
   const [selectOpenAnak, setSelectOpenAnak] = useState(false);
   const [selectOpenKamar, setSelectOpenKamar] = useState(false);
   const [jumlahDewasa, setJumlahDewasa] = useState("");
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
   useEffect(function () {
     window.addEventListener("scroll", () => {
@@ -71,21 +66,11 @@ function Home() {
     };
   }, []);
 
-  // function handleSelect(jenis){
-  //   if(jenis === 'dewasa'){
-  //     setSelectOpenDewasa(!selectOpenDewasa);
-  //     setSelectOpenAnak(false);
-  //   }else{
-  //     setSelectOpenAnak(!selectOpenAnak);
-  //     setSelectOpenDewasa(false);
-  //   }
-  // }
-
   return (
     <>
       <div className="flex flex-col text-blue-900">
         <NavbarComp kelas="absolute" setBg="false" />
-        <div className="bg-hero-pattern h-128 bg-cover bg-center bg-fixed transition-all relative">
+        <div className={`bg-hero-pattern h-128 bg-cover bg-center bg-fixed transition-all relative`}>
           <div className="font-bold text-5xl md:text-6xl flex justify-center items-center h-full text-white text-center">
             {/* Selamat Datang di{" "}
               <span className="bg-primary py-2 px-3"> Grand Atma Hotel</span> */}
@@ -197,6 +182,12 @@ function Home() {
         </div>
         <div className="my-20">
           <FasilitasComp/>
+        </div>
+        <div>
+        <p className="text-3xl text-center uppercase tracking-wide font-medium mb-7">
+            Temukan Kami
+          </p>
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3953.098128168296!2d110.41612909999999!3d-7.779419499999999!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e7a59f1fb2f2b45%3A0x20986e2fe9c79cdd!2sUniversitas%20Atma%20Jaya%20Yogyakarta%20-%20Kampus%203%20Gedung%20Bonaventura%20Babarsari!5e0!3m2!1sid!2sid!4v1698610205040!5m2!1sid!2sid" className="w-full h-[400px] border-0" allowfullscreen="" loading="lazy" referrerPolicy="no-referrer-when-downgrade"></iframe>
         </div>
 
         {/* <div className="" style={{ height: "200vh" }}>

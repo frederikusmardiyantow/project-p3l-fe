@@ -14,6 +14,11 @@ import {
   DropdownItem,
   DropdownMenu,
   DropdownTrigger,
+  Modal,
+  ModalBody,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
   User,
 } from "@nextui-org/react";
 import { BiSolidLogOut } from "react-icons/bi";
@@ -45,8 +50,9 @@ const logOut = async (request, token) => {
 // eslint-disable-next-line react/prop-types
 function SidebarComp() {
   const [open, setOpen] = useState(true);
-  let apiKey = localStorage.getItem("apiKey");
+  let apiKeyAdmin = localStorage.getItem("apiKeyAdmin");
   const [dataLogin, setDataLogin] = useState({});
+  const [openKonfirm, setOpenKonfirm] = useState(false);
 
   const navigate = useNavigate();
 
@@ -101,7 +107,7 @@ function SidebarComp() {
       .get(`/profile`, {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${apiKey}`,
+          Authorization: `Bearer ${apiKeyAdmin}`,
         },
       })
       .then((response) => {
@@ -114,7 +120,7 @@ function SidebarComp() {
         toast.success(response.data.message);
       })
       .catch((error) => {
-        localStorage.removeItem("apiKey");
+        localStorage.removeItem("apiKeyAdmin");
         navigate("/loginAdm");
         toast.error(error.response.data.message);
       });
@@ -122,11 +128,11 @@ function SidebarComp() {
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate, apiKey]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate, apiKeyAdmin]);
 
   async function handleLogOut() {
-    const response = await logOut({}, apiKey);
+    const response = await logOut({}, apiKeyAdmin);
     if (response.data.status === "T") {
       toast.success(response.data.message);
       navigate("/");
@@ -159,7 +165,7 @@ function SidebarComp() {
             onClick={() => setOpen(!open)}
           />
         )}
-        <div className="flex gap-x-4 items-center">
+        <div className="flex gap-x-4 items-center relative">
           <img
             src={assets.LOGOGAH}
             className={`cursor-pointer duration-500 border-b-2 border-solid border-gray-200 pb-5 ${
@@ -203,15 +209,21 @@ function SidebarComp() {
             </div>
           ))}
         </ul>
-        <Button className="bg-primary text-white w-full rounded-md mt-5">
+        <div
+          className={`flex  rounded-md p-3 m-5 cursor-pointer hover:bg-light-white text-gray-300 text-md items-center gap-x-5 h-12 ${
+            !open && "justify-center"
+          } hover:bg-danger hover:bg-opacity-30 absolute bottom-0 left-0 right-0`} onClick={() => setOpenKonfirm(true)}
+        >
           <BiSolidLogOut />
           <span className={`${!open && "hidden"} origin-left duration-200`}>
             Keluar
           </span>
-        </Button>
+        </div>
       </div>
       <div
-        className={`flex-1 ${open ? "ms-20 md:ms-72" : "ms-20"} duration-300 bg-blue-50 min-h-screen`}
+        className={`flex-1 ${
+          open ? "ms-20 md:ms-72" : "ms-20"
+        } duration-300 bg-blue-50 min-h-screen`}
       >
         <div className="ring-2 ring-black h-16 items-center flex p-5 uppercase font-medium tracking-normal justify-between">
           <p>
@@ -249,7 +261,7 @@ function SidebarComp() {
                   color="danger"
                   description="Keluar dari akun dengan aman"
                   startContent={<BiSolidLogOut />}
-                  onClick={handleLogOut}
+                  onClick={() => setOpenKonfirm(true)}
                 >
                   Log Out
                 </DropdownItem>
@@ -261,6 +273,49 @@ function SidebarComp() {
           <Outlet />
         </div>
       </div>
+      <Modal
+        backdrop="opaque"
+        isOpen={openKonfirm}
+        onOpenChange={setOpenKonfirm}
+        placement="center"
+        isDismissable={false}
+        radius="2xl"
+        classNames={{
+          body: "py-6",
+          backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+          //   base: "border-[#292f46] ",
+          header: "bg-red-600 text-white",
+          //   footer: "border-t-[1px] border-[#292f46]",
+          closeButton: "hover:bg-white/5 active:bg-white/10",
+        }}
+      >
+        <ModalContent>
+          <ModalHeader className="flex flex-col gap-1 "></ModalHeader>
+          <ModalBody>
+            <p>Apakah yakin ingin logout dari akun ini?</p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="secondary"
+              variant="light"
+              onClick={() => {
+                setOpenKonfirm(!openKonfirm);
+              }}
+            >
+              Tidak
+            </Button>
+            <Button
+              className="bg-red-500 text-white font-medium shadow-lg shadow-indigo-500/20"
+              onClick={() => {
+                handleLogOut();
+                setOpenKonfirm(false);
+              }}
+            >
+              Ya
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

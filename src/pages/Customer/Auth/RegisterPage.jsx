@@ -206,7 +206,7 @@ function RegisterPage() {
               </Button>
             </form>
             <p className="text-center pt-3 pb-1 text-slate-300">
-              Sudah memiliki akun? <Link to="/register" className="hover:font-semibold">Masuk</Link>
+              Sudah memiliki akun? <Link to="/login" className="hover:font-semibold">Masuk</Link>
             </p>
           </div>
         </div>

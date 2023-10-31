@@ -23,6 +23,7 @@ import { BiSolidHelpCircle, BiSolidLogOut } from "react-icons/bi";
 import { toast } from "react-toastify";
 import axios from "axios";
 import assets from "../assets";
+import baseUrl from "../config";
 
 const logOut = async (request, token) => {
   let res = null;
@@ -95,8 +96,8 @@ function NavbarComp({ kelas, setBg }) {
           })
           .catch((error) => {
             localStorage.removeItem('apiKey');
-            navigate('/');
-            toast.error(error.response.data.message);
+            // navigate('/');
+            // toast.error(error.response.data.message);
           });
         }
         document.addEventListener("scroll", () => {
@@ -139,7 +140,7 @@ function NavbarComp({ kelas, setBg }) {
         />
         <NavbarBrand className="w-full">
           <Link to="/">
-            <img src={assets.LOGOGAHhWhite} alt="logo" className="h-12 max-w-none" />
+            <img src={baseUrl+logo} alt="logo" className="h-12 max-w-none" />
           </Link>
         </NavbarBrand>
       </NavbarContent>

@@ -21,14 +21,15 @@ import SeasonSM from "./pages/Pegawai/SM/SeasonSM";
 import TarifSM from "./pages/Pegawai/SM/TarifSM";
 import FasilitasBerbayarSM from "./pages/Pegawai/SM/FasilitasBerbayarSM";
 import CustomerSM from "./pages/Pegawai/SM/CustomerSM";
+import RiwayatTrxCustomer from "./pages/Pegawai/SM/RiwayatTrxCustomer";
 
 axios.defaults.baseURL = "http://127.0.0.1:8000/api";
 
 function App() {
   
-useEffect(() => {
-  localStorage.getItem('apiKey');
-}, []);
+// useEffect(() => {
+//   localStorage.getItem('apiKey');
+// }, []);
 
   return (
     <BrowserRouter>
@@ -53,6 +54,7 @@ useEffect(() => {
           <Route path="tarif" element={<TarifSM/>}/>
           <Route path="fasilitas" element={<FasilitasBerbayarSM/>}/>
           <Route path="customer" element={<CustomerSM/>}/>
+          <Route path="customer/riwayat/:idCust" element={<RiwayatTrxCustomer/>}/>
         </Route>
         {/* <Route path="admin/*" element={
           <SidebarComp>

@@ -82,7 +82,7 @@ const updateData = async (id, request, token) => {
 
 export default function KamarAdmin() {
   const [dataKamar, setDataKamar] = useState([]); //tuk nampung data from db kamar
-  const token = localStorage.getItem("apiKey"); //tuk dpetin token bearer di localstorage
+  const token = localStorage.getItem("apiKeyAdmin"); //tuk dpetin token bearer di localstorage
   const navigation = useNavigate(); //untuk navigasi
   const [loadData, setLoadData] = useState(false); //tuk load data di tabel kamar
   const [isOpen, onOpenChange] = useState(false); //tuk triger modal add/update data kamar
@@ -345,7 +345,7 @@ export default function KamarAdmin() {
             </Tooltip> */}
             <Tooltip content="Edit data">
               <span
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                className="text-lg text-primary cursor-pointer active:opacity-50"
                 onClick={() => clickBtnEdit(data)}
               >
                 <BiEditAlt />
@@ -442,6 +442,8 @@ export default function KamarAdmin() {
       <Table
         aria-label="Tabel Kamar"
         removeWrapper
+        color="default"
+        selectionMode="single"
         classNames={{
           th: [
             "bg-transparent",
@@ -480,7 +482,7 @@ export default function KamarAdmin() {
         <TableBody
           items={items}
           isLoading={loadData}
-          emptyContent={"Tidak ada Data Permintaan Layanan"}
+          emptyContent={!loadData ? "Tidak ada Data Permintaan Layanan" : "  "}
           loadingContent={<Spinner />}
           loadingState={loadData}
         >

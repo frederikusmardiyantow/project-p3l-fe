@@ -22,7 +22,7 @@ function FasilitasComp() {
         Fasilitas yang Tersedia
       </p>
       <div className="flex flex-wrap md:flex-nowrap gap-4">
-        <div className="bg-red-500 h-10 w-1/2">
+        <div className=" h-10 w-1/2">
 
         </div>
         <div className="bg-red-50 h-[450px] w-full md:w-3/5">

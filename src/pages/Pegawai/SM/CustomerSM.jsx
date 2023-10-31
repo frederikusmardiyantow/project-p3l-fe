@@ -61,14 +61,14 @@ import FormatDate from "../../../utils/FormatDate";
 function CustomerSM() {
     const [dataCustomer, setDataCustomer] = useState([]);
     const [loadData, setLoadData] = useState(false);
-    const token = localStorage.getItem("apiKey");
+    const token = localStorage.getItem("apiKeyAdmin");
     const navigation = useNavigate();
+    // const history = useHistory();
     const [tempData, setTempData] = useState({});
     const [loadSubmit, setLoadSubmit] = useState(false);
     const [tempId, setTempId] = useState(false);
     const [isOpen, onOpenChange] = useState(false);
     const [validation, setValidation] = useState([]);
-    const [openDetail, setOpenDetail] = useState(false);
     const [filterData, setFilterData] = useState("");
     const [page, setPage] = useState(1);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -87,7 +87,7 @@ function CustomerSM() {
       );
     });
   
-    const pages = Math.ceil(dataFilter.length / rowsPerPage);
+    const pages = Math.ceil(dataFilter?.length / rowsPerPage);
   
     const items = useMemo(() => {
       const start = (page - 1) * rowsPerPage;
@@ -127,9 +127,9 @@ function CustomerSM() {
         });
       setLoadData(false);
     }
-    // async function getDataById(id) {
+    // async function getDataRiwayatTrxByCustomer(id) {
     //   await axios
-    //     .get(`/customer/${id}`, {
+    //     .get(`/transaksi/${id}`, {
     //       headers: {
     //         "Content-Type": "application/json",
     //         Authorization: `Bearer ${token}`,
@@ -138,10 +138,11 @@ function CustomerSM() {
     //     .then((response) => {
     //       // res = response;
     //       const { data } = response.data;
+    //       setDataRiwayatTrxByCustomer(data.reverse());
     //       toast.success(response.data.message);
-    //       setTempData(data);
     //     })
     //     .catch((error) => {
+    //       history.goBack();
     //       toast.error(error.response.data.message);
     //     });
     // }
@@ -181,10 +182,11 @@ function CustomerSM() {
       setTempData({});
       onOpenChange(true);
     }
-    function clickBtnDetail(data) {
-        setTempId(data.id);
-        setOpenDetail(true);
-      }
+    // function clickBtnDetail(data) {
+    //     setTempId(data.id);
+    //     getDataRiwayatTrxByCustomer(data.id);
+    //     setOpenDetail(true);
+    //   }
   
     const renderCell = useCallback((data, columnKey) => {
       switch (columnKey) {
@@ -238,7 +240,7 @@ function CustomerSM() {
           return (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Details">
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50" onClick={() => {clickBtnDetail(data)}}>
+                <span className="text-lg text-secondary cursor-pointer active:opacity-50" onClick={() => {navigation(`/admin/customer/riwayat/${data?.id}`)}}>
                   <GiBeastEye />
                 </span>
               </Tooltip>
@@ -345,7 +347,7 @@ function CustomerSM() {
         <TableBody
           items={items}
           isLoading={loadData}
-          emptyContent={"Tidak ada Data Permintaan Layanan"}
+          emptyContent={!loadData ? "Tidak ada Data Permintaan Layanan" : "  "}
           loadingContent={<Spinner />}
           loadingState={loadData}
         >
@@ -526,28 +528,6 @@ function CustomerSM() {
               Tutup
             </Button>
           </ModalFooter> */}
-        </ModalContent>
-      </Modal>
-      <Modal
-        backdrop="opaque"
-        isOpen={openDetail}
-        onOpenChange={setOpenDetail}
-        placement="center"
-        radius="2xl"
-        classNames={{
-          body: "py-6",
-          backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
-          //   base: "border-[#292f46] ",
-          header: "bg-primary text-white",
-          //   footer: "border-t-[1px] border-[#292f46]",
-          closeButton: "hover:bg-white/5 active:bg-white/10",
-        }}
-      >
-        <ModalContent>
-          <ModalHeader className="flex flex-col gap-1 "> Detail Transaksi Customer Group</ModalHeader>
-          <ModalBody>
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Error veniam blanditiis voluptates explicabo hic ullam perspiciatis. Laboriosam dignissimos accusamus in, fugiat nobis, labore corrupti ad voluptatum deleniti quasi, nisi voluptatibus.</p>
-          </ModalBody>
         </ModalContent>
       </Modal>
     </>

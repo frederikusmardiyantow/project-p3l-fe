@@ -16,6 +16,7 @@ import {
   TableRow,
   Textarea,
   Tooltip,
+  User,
 } from "@nextui-org/react";
 import axios from "axios";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -30,7 +31,6 @@ import FormatCurrency from "../../../utils/FormatCurrency";
 const columns = [
   { name: "NAMA LAYANAN", uid: "nama_layanan" },
   { name: "HARGA", uid: "harga" },
-  { name: "SATUAN", uid: "satuan" },
   { name: "KETERANGAN", uid: "keterangan" },
   { name: "AKSI", uid: "aksi" },
 ];
@@ -75,7 +75,7 @@ const updateData = async (id, request, token) => {
 function FasilitasBerbayarSM() {
   const [dataFasilitas, setDataFasilitas] = useState([]);
   const [loadData, setLoadData] = useState(false);
-  const token = localStorage.getItem("apiKey");
+  const token = localStorage.getItem("apiKeyAdmin");
   const navigation = useNavigate();
   const [tempData, setTempData] = useState({});
   const [loadSubmit, setLoadSubmit] = useState(false);
@@ -95,7 +95,7 @@ function FasilitasBerbayarSM() {
     return namaLayanan.includes(filter) || satuan.includes(filter);
   });
 
-  const pages = Math.ceil(dataFilter.length / rowsPerPage);
+  const pages = Math.ceil(dataFilter?.length / rowsPerPage);
 
   const items = useMemo(() => {
     const start = (page - 1) * rowsPerPage;
@@ -237,17 +237,14 @@ function FasilitasBerbayarSM() {
         );
       case "harga":
         return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm">
-              {data?.harga && FormatCurrency(data?.harga)}
-            </p>
-          </div>
-        );
-      case "satuan":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm">/{data?.satuan}</p>
-          </div>
+            <User
+            avatarProps={{radius: "full", src: "https://cdn.pixabay.com/photo/2022/05/10/03/54/rupiah-7185866_1280.png"}}
+            description={'/'+data?.satuan}
+            name={data?.harga && FormatCurrency(data?.harga)}
+          >
+            {data?.harga && FormatCurrency(data?.harga)}
+          </User>
+          
         );
       case "keterangan":
         return (
@@ -265,7 +262,7 @@ function FasilitasBerbayarSM() {
             </Tooltip> */}
             <Tooltip content="Edit data">
               <span
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                className="text-lg text-primary cursor-pointer active:opacity-50"
                 onClick={() => clickBtnEdit(data)}
               >
                 <BiEditAlt />
@@ -342,6 +339,8 @@ function FasilitasBerbayarSM() {
       <Table
         aria-label="Tabel Fasilitas"
         removeWrapper
+        color="default"
+        selectionMode="single"
         classNames={{
           th: [
             "bg-transparent",
@@ -380,7 +379,7 @@ function FasilitasBerbayarSM() {
         <TableBody
           items={items}
           isLoading={loadData}
-          emptyContent={"Tidak ada Data Permintaan Layanan"}
+          emptyContent={!loadData ? "Tidak ada Data Permintaan Layanan" : "  "}
           loadingContent={<Spinner />}
           loadingState={loadData}
         >

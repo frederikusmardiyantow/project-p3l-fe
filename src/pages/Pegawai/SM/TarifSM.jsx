@@ -9,6 +9,7 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormatCurrency from "../../../utils/FormatCurrency";
+import FormatDateTime from "../../../utils/FormatDateTime";
 
 const columns = [
     { name: "NAMA SEASON", uid: "nama_season" },
@@ -61,7 +62,7 @@ const addData = async (request, token) => {
 function TarifSM() {
   const [dataTarif, setDataTarif] = useState([]);
   const [loadData, setLoadData] = useState(false);
-  const token = localStorage.getItem("apiKey");
+  const token = localStorage.getItem("apiKeyAdmin");
   const navigation = useNavigate();
   const [tempData, setTempData] = useState({});
   const [loadSubmit, setLoadSubmit] = useState(false);
@@ -73,7 +74,10 @@ function TarifSM() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [selectJenisKamar, setSelectJenisKamar] = useState(false);
+  const [selectSeason, setSelectSeason] = useState(false);
   const [dataJenisKamar, setDataJenisKamar] = useState([]);
+  const [dataSeason, setDataSeason] = useState([]);
+  const [tempDataSeason, setTempDataSeason] = useState({}); //tuk nampung data season id yg dipilih (tuk nampilin tanggal mulai, selesai dan status)
 
   const dataFilter = dataTarif?.filter((item) => {
     const namaSeason = item?.seasons?.nama_season.toLowerCase();
@@ -130,7 +134,7 @@ function TarifSM() {
   }
   async function getDataById(id) {
     await axios
-      .get(`/season/${id}`, {
+      .get(`/tarif/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -163,9 +167,45 @@ function TarifSM() {
         toast.error(error.response.data.message);
       });
   }
+  async function getDataSeasonAll() {
+    await axios
+      .get(`/season`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // res = response;
+        const { data } = response.data;
+        setDataSeason(data);
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  }
+  async function getDataSeasonById(id) {
+    await axios
+      .get(`/season/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        // res = response;
+        const { data } = response.data;
+        toast.success(response.data.message);
+        setTempDataSeason(data);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  }
   const deleteData = async (id) => {
     await axios
-      .delete(`/season/${id}`, {
+      .delete(`/tarif/${id}`, {
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
@@ -222,6 +262,7 @@ function TarifSM() {
   }
   function clickBtnAdd() {
     getDataJenisKamarAll();
+    getDataSeasonAll();
     setTempId("");
     setTempData({});
     onOpenChange(true);
@@ -229,6 +270,7 @@ function TarifSM() {
   function clickBtnEdit(data) {
     setTempId("");
     getDataJenisKamarAll();
+    getDataSeasonAll();
     getDataById(data.id);
     setTempId(data.id);
     onOpenChange(true);
@@ -308,7 +350,7 @@ function TarifSM() {
             </Tooltip> */}
             <Tooltip content="Edit data">
               <span
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                className="text-lg text-primary cursor-pointer active:opacity-50"
                 onClick={() => clickBtnEdit(data)}
               >
                 <BiEditAlt />
@@ -382,6 +424,8 @@ function TarifSM() {
       <Table
         aria-label="Tabel Tarif"
         removeWrapper
+        color="default"
+        selectionMode="single"
         classNames={{
           th: [
             "bg-transparent",
@@ -420,7 +464,7 @@ function TarifSM() {
         <TableBody
           items={items}
           isLoading={loadData}
-          emptyContent={"Tidak ada Data Permintaan Layanan"}
+          emptyContent={!loadData ? "Tidak ada Data Permintaan Layanan" : "  "}
           loadingContent={<Spinner />}
           loadingState={loadData}
         >
@@ -447,7 +491,7 @@ function TarifSM() {
       >
         <ModalContent className="p-1 pb-3">
           <ModalHeader className="flex flex-col gap-1">
-            {tempId ? "Ubah" : "Tambah"} Kamar
+            {tempId ? "Ubah" : "Tambah"} Tarif
           </ModalHeader>
           <ModalBody>
             <div>
@@ -459,7 +503,7 @@ function TarifSM() {
                 }}
                 className="grid gap-3"
               >
-                <div className="flex gap-3">
+                <div className="flex gap-3 flex-col md:flex-row">
                   <Select
                     variant="bordered"
                     label="Jenis Kamar"
@@ -475,7 +519,6 @@ function TarifSM() {
                       setTempData({
                         ...tempData,
                         id_jenis_kamar: e.target.value,
-                        jenis_bed: "",
                       });
                       validation.id_jenis_kamar = null;
                     }}
@@ -493,7 +536,83 @@ function TarifSM() {
                       </SelectItem>
                     ))}
                   </Select>
+                  <Select
+                    variant="bordered"
+                    label="Season"
+                    placeholder="Pilih Season"
+                    selectedKeys={
+                      tempData?.id_season
+                        ? [tempData?.id_season.toString()]
+                        : []
+                    }
+                    isInvalid={validation.id_season ? true : false}
+                    errorMessage={validation.id_season}
+                    onChange={(e) => {
+                      setTempDataSeason({});
+                      setTempData({
+                        ...tempData,
+                        id_season: e.target.value,
+                      });
+                      validation.id_season = null;
+                      getDataSeasonById(e.target.value);
+                    }}
+                    // className="bg-white rounded-xl"
+                    isOpen={selectSeason}
+                    onClick={() => setSelectSeason(!selectSeason)}
+                  >
+                    {dataSeason.map((season) => (
+                      <SelectItem
+                        key={season.id}
+                        value={season.id}
+                        onClick={() => setSelectSeason(!selectSeason)}
+                      >
+                        {season.nama_season}
+                      </SelectItem>
+                    ))}
+                  </Select>
                 </div>
+                {tempData?.id_season && 
+                  <div className="flex gap-3 items-center">
+                    <div className={`font-bold h-full bg-gray-100 flex items-center text-center rounded-xl px-3 ${!tempDataSeason?.jenis_season && 'italic !font-normal'}`}>
+                      {tempDataSeason?.jenis_season ? tempDataSeason?.jenis_season : 'Loading...'}
+                    </div>
+                    <Input
+                    disabled
+                    type="text"
+                    variant="bordered"
+                    placeholder=" "
+                    label="Tanggal Mulai Season"
+                    value={tempDataSeason?.tgl_mulai ? FormatDateTime(new Date(tempDataSeason?.tgl_mulai)) : ""}
+                  />
+                  <Input
+                    disabled
+                    type="text"
+                    variant="bordered"
+                    placeholder=" "
+                    label="Tanggal Selesai Season"
+                    value={tempDataSeason?.tgl_selesai ? FormatDateTime(new Date(tempDataSeason?.tgl_selesai)) : ""}
+                  />
+                  <div className={`font-bold text-sm w-3/5 h-max text-center px-3 py-0.5 rounded-full text-gray-500 ${new Date(tempDataSeason?.tgl_selesai) < new Date() ? 'ring-2 bg-red-300 ring-red-500' : (new Date(tempDataSeason?.tgl_mulai) < new Date() ? 'ring-2 bg-green-300 ring-green-500' : (new Date() < new Date(tempDataSeason?.tgl_mulai) ? 'ring-2 bg-orange-300 ring-orange-500' : 'ring-2 italic !font-normal'))}`}>
+                    {new Date(tempDataSeason?.tgl_selesai) < new Date() ? 'Sudah Berakhir' : (new Date(tempDataSeason?.tgl_mulai) < new Date() ? 'Sedang Berjalan' : (new Date() < new Date(tempDataSeason?.tgl_mulai) ? 'OTW' : 'Loading...'))}
+                  </div>
+                  </div>
+                }
+                <Input
+                    type="number"
+                    variant="bordered"
+                    label="Perubahan Tarif"
+                    placeholder="Masukkan Perubahan Tarif"
+                    value={tempData.perubahan_tarif}
+                    isInvalid={validation.perubahan_tarif ? true : false}
+                    errorMessage={validation.perubahan_tarif}
+                    onChange={(e) => {
+                      setTempData({
+                        ...tempData,
+                        perubahan_tarif: e.target.value,
+                      });
+                      validation.perubahan_tarif = null;
+                    }}
+                  />
 
                 <Button
                   type="submit"

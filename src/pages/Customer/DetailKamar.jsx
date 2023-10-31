@@ -40,14 +40,14 @@ function DetailKamar() {
         <div className="h-128 overflow-hidden items-center flex">
           <img src={detailKamar.gambar} alt="kamar" className="w-full bg-cover bg-fixed -z-10"/>
         </div>
-        <div className="w-full h-max">
-          <div className="bg-slate-50 -mt-20 h-max w-4/5 p-8 mx-auto inset-x-0 rounded-lg drop-shadow-sm space-y-10 mb-10">
-            <div className="mx-10 space-y-5">
-              <p className="text-3xl font-medium border-b-2 border-solid border-gray-900 py-5 w-1/2 uppercase">{detailKamar.jenis_kamar}</p>
+        <div className="w-full h-max mb-8">
+          <div className="bg-slate-50 -mt-20 h-max w-4/5 py-6 px-2 md:p-8 mx-auto inset-x-0 rounded-lg drop-shadow-sm space-y-10">
+            <div className="mx-4 md:mx-10 space-y-5">
+              <p className="text-3xl font-medium border-b-2 border-solid border-gray-900 w-1/2 uppercase">{detailKamar.jenis_kamar}</p>
               <p className="text-justify">Kamar {detailKamar.jenis_kamar} seluas {detailKamar.ukuran_kamar} meter persegi yang baru direnovasi didesain ulang dengan indah dan didekorasi dengan perabotan penuh gaya. Semua kamar memiliki balkon ekstra luas dengan pemandangan kolam renang yang dikelilingi oleh Taman Kerajaan yang rimbun, dan situs warisan Istana Kerajaan. Fitur khusus lainnya termasuk akses Internet nirkabel gratis, Smart LED TV, fasilitas kopi dan teh, brankas dalam kamar seukuran laptop, dan tempat tidur premium dengan kasur dengan bantalan ekstra lembut.</p>
             </div>
-            <div className="flex w-full gap-3">
-              <div className="w-[60%]  h-max p-3">
+            <div className="flex flex-col md:flex-row w-full gap-3">
+              <div className="w-full md:w-[60%]  h-max p-3">
                 <img src={detailKamar.gambar} alt="kamar" className="w-full aspect-video rounded-lg"/>
                 <div className="mt-4">
                   
@@ -68,28 +68,22 @@ function DetailKamar() {
                       <span className="text-xl font-bold">{detailKamar.ukuran_kamar} m<sup>2</sup></span>
                     </div>
                   </div>
-                  <div className="mt-5 px-5 space-y-3">
+                  <div className="mt-5 md:px-5 space-y-3">
                     <p className="uppercase text-2xl font-medium border-b-2 border-solid border-gray-300 py-2 ">Rincian Kamar</p>
-                    {detailKamar.deskripsi}
                     <ul className="list-disc list-inside space-y-1 ms-4">
-                      <li>a</li>
-                      <li>a</li>
-                      <li>a</li>
-                      <li>a</li>
-                      <li>a</li>
+                      {detailKamar?.deskripsi?.split(' - ').map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>
               </div>
-              <div className="w-[40%] h-full space-y-3">
+              <div className="w-full md:w-[40%] h-full space-y-3 px-3">
               <p className="uppercase text-2xl font-medium border-b-2 border-solid border-gray-300 py-2 ">Fasilitas</p>
-              {detailKamar.fasilitas_kamar}
-                    <ul className="list-disc list-inside space-y-1 ms-4">
-                      <li>a</li>
-                      <li>a</li>
-                      <li>a</li>
-                      <li>a</li>
-                      <li>a</li>
+              <ul className="list-disc list-inside space-y-1 ms-4">
+                      {detailKamar?.fasilitas_kamar?.split(' - ').map((item, index) => (
+                        <li key={index}>{item}</li>
+                      ))}
                     </ul>
               </div>
             </div>
