@@ -30,6 +30,7 @@ import { BiEditAlt } from "react-icons/bi";
 import { MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import FormatCurrency from "../../../utils/FormatCurrency";
+import ModalKonfAdd from "../../../components/ModalKonfAdd";
 
 const columns = [
   { name: "NOMOR KAMAR", uid: "nomor_kamar" },
@@ -100,6 +101,9 @@ export default function KamarAdmin() {
   const [dataJenisKamar, setDataJenisKamar] = useState([]); //tuk nampung data from db jenis kamar
   const [openKonfirm, setOpenKonfirm] = useState(false); //tuk triger modal konfirmasi delete kamar
   const [pembantuInputanJenisBed, setPembantuInputanJenisBed] = useState(true); // buat bantu kl klik update, maka set jenis bed di inputan disabled. kalo jenis kamar di on chance, maka ubah ke dropdown lagi
+  const [konfirmEdit, setKonfirmEdit] = useState(false);
+  const [konfirmAdd, setKonfirmAdd] = useState(false);
+  const [loadingKonfirm, setLoadingKonfirm] = useState(false);
 
   const pages = Math.ceil(dataKamar.length / rowsPerPage); //tuk membagi data yg tampil ditiap halaman
 
@@ -146,7 +150,7 @@ export default function KamarAdmin() {
         // res = response;
         const { data } = response.data;
         setDataKamar(data.reverse());
-        toast.success(response.data.message);
+        // toast.success(response.data.message);
       })
       .catch((error) => {
         navigation("/loginAdm");
@@ -165,7 +169,7 @@ export default function KamarAdmin() {
       .then((response) => {
         // res = response;
         const { data } = response.data;
-        toast.success(response.data.message);
+        // toast.success(response.data.message);
         setTempData(data);
       })
       .catch((error) => {
@@ -183,7 +187,7 @@ export default function KamarAdmin() {
         // res = response;
         const { data } = response.data;
         setDataJenisKamar(data);
-        toast.success(response.data.message);
+        // toast.success(response.data.message);
       })
       .catch((error) => {
         toast.error(error.response.data.message);
@@ -235,12 +239,17 @@ export default function KamarAdmin() {
     }
     setLoadSubmit(false);
     if (response.data.status === "T") {
+      setLoadingKonfirm(false)
+      setKonfirmAdd(false)
+      setKonfirmEdit(false)
       getDataAll();
       toast.success(response.data.message);
       setTempData({});
       setTempId("");
       onOpenChange(false);
     } else {
+      setKonfirmAdd(false)
+      setKonfirmEdit(false)
       setValidation(response.data.message);
       toast.error(response.data.message);
       // refreshPage();
@@ -263,6 +272,17 @@ export default function KamarAdmin() {
   function clickBtnDelete(data) {
     setTempId(data.id);
     setOpenKonfirm(true);
+  }
+
+  function handleKonfirmAdd(e){
+    e.preventDefault();
+    setLoadingKonfirm(false);
+    setKonfirmAdd(true);
+  }
+  function handleKonfirmEdit(e){
+    e.preventDefault();
+    setLoadingKonfirm(false);
+    setKonfirmEdit(true);
   }
 
   const renderCell = React.useCallback((data, columnKey) => {
@@ -516,7 +536,7 @@ export default function KamarAdmin() {
               <form
                 onSubmit={(e) => {
                   {
-                    tempId ? handleSubmit(e, "update") : handleSubmit(e, "add");
+                    tempId ? handleKonfirmEdit(e) : handleKonfirmAdd(e);
                   }
                 }}
                 className="grid gap-3"
@@ -782,6 +802,8 @@ export default function KamarAdmin() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <ModalKonfAdd openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   );
 }

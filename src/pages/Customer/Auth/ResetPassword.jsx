@@ -5,6 +5,7 @@ import InputComp from "../../../components/InputComp";
 import { Button } from "@nextui-org/react";
 import axios from "axios";
 import { BiSolidLockAlt } from "react-icons/bi";
+import assets from "../../../assets";
 
 // const checkToken = async (request) => {
 //   let res = null;
@@ -103,7 +104,7 @@ function ResetPassword() {
         <div className="">
           <Link to="/">
             <img
-              src="GAH-horizontal-white.png"
+              src={assets.LOGOGAHhWhite}
               alt="logo"
               className="w-72 drop-shadow-logo-shadow"
             />

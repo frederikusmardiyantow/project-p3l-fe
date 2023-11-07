@@ -81,17 +81,7 @@ function NavbarComp({ kelas, setBg }) {
             // res = response;
             const {data} = response.data;
             // const {nama_customer, email, jenis_identitas, no_identitas, no_telp, alamat, created_at, updated_at} = data;
-            setData({
-              data
-              // nama_customer,
-              // email,
-              // jenis_identitas,
-              // no_identitas, 
-              // no_telp,
-              // alamat,
-              // created_at,
-              // updated_at
-            });
+            setData(data);
             toast.success(response.data.message);
           })
           .catch((error) => {

@@ -22,8 +22,9 @@ import TarifSM from "./pages/Pegawai/SM/TarifSM";
 import FasilitasBerbayarSM from "./pages/Pegawai/SM/FasilitasBerbayarSM";
 import CustomerSM from "./pages/Pegawai/SM/CustomerSM";
 import RiwayatTrxCustomer from "./pages/Pegawai/SM/RiwayatTrxCustomer";
+import KetersediaanKamar from "./pages/Customer/KetersediaanKamar";
 
-axios.defaults.baseURL = "http://127.0.0.1:8000/api";
+axios.defaults.baseURL = "https://project-p3l-be.frederikus.com/api";
 
 function App() {
   
@@ -42,6 +43,7 @@ function App() {
         <Route path="resetPassword/:token" element={<ResetPassword/>} />
         <Route path="register" element={<Register />} />
         <Route path="kamar" element={<KamarPage />} />
+        <Route path="ketersediaan/kamar" element={<KetersediaanKamar />} />
         <Route path="kamar/:id" element={<DetailKamar />} />
         <Route path="profil" element={<ProfilPage />} />
         <Route path="riwayatReservasi" element={<RiwayatReservasi />} />

@@ -107,7 +107,7 @@ function Home() {
           <JenisKamarComp/>
         </div>
         <div className="h-max bg-blue-50 px-10 py-16">
-          <p className="text-3xl text-center uppercase tracking-wide font-normal mb-9">
+          <p className="text-3xl text-center uppercase tracking-wide font-medium mb-9">
             Cek Ketersediaan Kamar
           </p>
           <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 items-center">
@@ -168,9 +168,11 @@ function Home() {
                 </SelectItem>
               ))}
             </Select>
-            <Button className="bg-primary hover:bg-secondary text-slate-100 font-medium">
-              Cari
-            </Button>
+            <Link to="/ketersediaan/kamar">
+              <Button className="bg-primary hover:bg-secondary text-slate-100 font-medium">
+                Cari
+              </Button>
+            </Link>
             {/* <Calendar onChange={onChange} value={value}/> */}
           </div>
           <p className="text-center mt-7 italic">

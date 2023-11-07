@@ -85,7 +85,7 @@ function RiwayatReservasi() {
     <>
       <div className="relative">
         <NavbarComp kelas="fixed" setBg="true" />
-        <div className="h-[400px] md:h-[300px] bg-[url('bg-profil.jpg')] bg-cover bg-no-repeat bg-fixed">
+        <div className="h-[400px] md:h-[300px] bg-[url('http://127.0.0.1:5173/bg-profil.jpg')] bg-cover bg-no-repeat bg-fixed">
           <div className="flex items-center justify-center h-full w-full">
             <p className="text-4xl md:text-6xl font-bold text-center uppercase tracking-wider text-white">
               Riwayat Pemesanan Kamar

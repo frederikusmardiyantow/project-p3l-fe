@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormatCurrency from "../../../utils/FormatCurrency";
 import FormatDateTime from "../../../utils/FormatDateTime";
+import ModalKonfAdd from "../../../components/ModalKonfAdd";
 
 const columns = [
     { name: "NAMA SEASON", uid: "nama_season" },
@@ -78,6 +79,9 @@ function TarifSM() {
   const [dataJenisKamar, setDataJenisKamar] = useState([]);
   const [dataSeason, setDataSeason] = useState([]);
   const [tempDataSeason, setTempDataSeason] = useState({}); //tuk nampung data season id yg dipilih (tuk nampilin tanggal mulai, selesai dan status)
+  const [konfirmEdit, setKonfirmEdit] = useState(false);
+  const [konfirmAdd, setKonfirmAdd] = useState(false);
+  const [loadingKonfirm, setLoadingKonfirm] = useState(false);
 
   const dataFilter = dataTarif?.filter((item) => {
     const namaSeason = item?.seasons?.nama_season.toLowerCase();
@@ -249,12 +253,17 @@ function TarifSM() {
     }
     setLoadSubmit(false);
     if (response.data.status === "T") {
+      setLoadingKonfirm(false)
+      setKonfirmAdd(false)
+      setKonfirmEdit(false)
       getDataAll();
       toast.success(response.data.message);
       setTempData({});
       setTempId("");
       onOpenChange(false);
     } else {
+      setKonfirmAdd(false)
+      setKonfirmEdit(false)
       setValidation(response.data.message);
       toast.error(response.data.message);
       // refreshPage();
@@ -278,6 +287,16 @@ function TarifSM() {
   function clickBtnDelete(data) {
     setTempId(data.id);
     setOpenKonfirm(true);
+  }
+  function handleKonfirmAdd(e){
+    e.preventDefault();
+    setLoadingKonfirm(false);
+    setKonfirmAdd(true);
+  }
+  function handleKonfirmEdit(e){
+    e.preventDefault();
+    setLoadingKonfirm(false);
+    setKonfirmEdit(true);
   }
 
   const renderCell = useCallback((data, columnKey) => {
@@ -498,7 +517,7 @@ function TarifSM() {
               <form
                 onSubmit={(e) => {
                   {
-                    tempId ? handleSubmit(e, "update") : handleSubmit(e, "add");
+                    tempId ? handleKonfirmEdit(e) : handleKonfirmAdd(e);
                   }
                 }}
                 className="grid gap-3"
@@ -680,6 +699,8 @@ function TarifSM() {
           </ModalFooter>
         </ModalContent>
       </Modal>
+      <ModalKonfAdd openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   )
 }

@@ -18,6 +18,8 @@ import {
   ModalFooter,
   useDisclosure,
 } from "@nextui-org/react";
+import Footer from "../../components/FooterComp";
+import ModalKonfAdd from "../../components/ModalKonfAdd";
 
 const ubahProfil = async (request, token) => {
   let res = null;
@@ -68,6 +70,9 @@ function ProfilPage() {
   const [validation, setValidation] = useState([]);
   // let nama = null;
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [disabelInput, setDisabelInput] = useState(true);
+  const [konfirmEdit, setKonfirmEdit] = useState(false);
+  const [loadingKonfirm, setLoadingKonfirm] = useState(false);
 
   const token = localStorage.getItem("apiKey");
   const navigation = useNavigate();
@@ -133,8 +138,11 @@ function ProfilPage() {
     );
     setLoad(false);
     if (response.data.status === "T") {
+      setLoadingKonfirm(false);
+      setKonfirmEdit(false);
       toast.success(response.data.message);
     } else {
+      setKonfirmEdit(false);
       setValidation(response.data.message);
       toast.error(response.data.message);
       // refreshPage();
@@ -167,11 +175,18 @@ function ProfilPage() {
     }
   }
 
+  function handleKonfirmEdit(e){
+    e.preventDefault();
+    setLoadingKonfirm(false);
+    setKonfirmEdit(true);
+    setDisabelInput(true);
+  }
+
   return (
     <>
       <div className="relative">
         <NavbarComp kelas="absolute" />
-        <div className="h-[700px] md:h-[500px] bg-[url('bg-profil.jpg')] bg-cover bg-no-repeat bg-fixed"></div>
+        <div className="h-[700px] md:h-[500px] bg-[url('http://127.0.0.1:5173/bg-profil.jpg')] bg-cover bg-no-repeat bg-fixed"></div>
 
         <div className="justify-center flex top-40 absolute w-full">
           <div className="flex flex-col md:flex-row w-3/4 gap-5 md:gap-10 ">
@@ -222,7 +237,7 @@ function ProfilPage() {
             </div>
           </div>
         </div>
-        <div className="h-[200vh] relative">
+        <div className="h-[100vh] relative">
           <div className="h-max bg-slate-50 mx-auto w-[90%] md:w-3/4 absolute inset-x-0 -top-16 rounded-xl p-5 gap-8 flex flex-col shadow-md">
             <div>
               <p className="text-xl font-bold border-b-1 border-solid border-stone-400 pb-3 mb-3">
@@ -231,6 +246,7 @@ function ProfilPage() {
               <div className="flex flex-wrap md:flex-nowrap gap-5">
                 <Input
                   type="text"
+                  isDisabled={disabelInput}
                   variant="underlined"
                   label="Nama Lengkap"
                   startContent={
@@ -258,6 +274,7 @@ function ProfilPage() {
                 /> */}
                 <Input
                   type="email"
+                  isDisabled={disabelInput}
                   variant="underlined"
                   label="Email"
                   startContent={
@@ -278,6 +295,7 @@ function ProfilPage() {
               <div className="flex flex-wrap md:flex-nowrap gap-5">
                 <Input
                   type="text"
+                  isDisabled={disabelInput}
                   variant="underlined"
                   label="Jenis Identitas"
                   startContent={
@@ -297,6 +315,7 @@ function ProfilPage() {
                 />
                 <Input
                   type="text"
+                  isDisabled={disabelInput}
                   variant="underlined"
                   label="Nomor Identitas"
                   startContent={
@@ -314,6 +333,7 @@ function ProfilPage() {
                 />
                 <Input
                   type="text"
+                  isDisabled={disabelInput}
                   variant="underlined"
                   label="Nomor Telepon"
                   startContent={
@@ -332,6 +352,7 @@ function ProfilPage() {
               </div>
               <Textarea
                 key="underlined"
+                isDisabled={disabelInput}
                 variant="underlined"
                 label="Alamat"
                 labelPlacement="inside"
@@ -354,18 +375,39 @@ function ProfilPage() {
                 saat ini data tambahan belum diperlukan
               </p>
             </div>
+            {disabelInput === false ?
             <div className="flex justify-center">
               <Button
                 className="w-2/6"
                 color="primary"
-                onClick={handleSubmit}
+                onClick={() => setDisabelInput(true)}
+                isLoading={load}
+              >
+                Batal
+              </Button>
+              <Button
+                className="w-2/6"
+                color="primary"
+                onClick={(e) => handleKonfirmEdit(e)}
                 isLoading={load}
               >
                 Simpan Data
               </Button>
-            </div>
+            </div> :  
+            <div className="flex justify-center">
+            <Button
+              className="w-2/6"
+              color="primary"
+              onClick={() => setDisabelInput(false)}
+              isLoading={load}
+            >
+              Ubah Data
+            </Button>
+          </div>
+            }
           </div>
         </div>
+        <Footer/>
       </div>
       <Modal
         isOpen={isOpen}
@@ -441,6 +483,7 @@ function ProfilPage() {
           )}
         </ModalContent>
       </Modal>
+      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   );
 }
