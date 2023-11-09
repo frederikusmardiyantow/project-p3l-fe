@@ -1,109 +1,140 @@
+/* eslint-disable react/prop-types */
 import { Button, Select, SelectItem } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import InputDateComp from "./InputDateComp";
-import { useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
+import { BsPerson } from "react-icons/bs";
+import { MdOutlineChildCare } from "react-icons/md";
+import { LuBedDouble } from "react-icons/lu";
+import { FiSearch } from "react-icons/fi";
+import { KamarContex } from "../contex/KamarContex";
 
-const jumlahs = [
-  { label: "1", value: "1" },
-  { label: "2", value: "2" },
-  { label: "3", value: "3" },
-  { label: "4", value: "4" },
-  { label: "5", value: "5" },
-  { label: "6", value: "6" },
-  { label: "7", value: "7" },
-  { label: "8", value: "8" },
-  { label: "9", value: "9" },
-  { label: "10", value: "10" },
-];
+function CekKetersediaanComp({
+  handleCari,
+  tempCheckIn,
+  tempCheckOut,
+  setTempCheckIn,
+  setTempCheckOut,
+  setTempJumlahAnak,
+  setTempJumlahDewasa,
+  setTempJumlahKamar,
+}) {
+  const { jumlahAnak, jumlahDewasa, jumlahKamar } = useContext(KamarContex);
+  const maxJumlahDewasa = 10;
+  const maxJumlahAnak = 10;
+  const maxJumlahKamar = 10;
 
-function CekKetersediaanComp() {
-  const [selectOpenDewasa, setSelectOpenDewasa] = useState(false);
-  const [selectOpenAnak, setSelectOpenAnak] = useState(false);
-  const [selectOpenKamar, setSelectOpenKamar] = useState(false);
-  const [jumlahDewasa, setJumlahDewasa] = useState("");
+  // const [selectOpenDewasa, setSelectOpenDewasa] = useState(false);
+  // const [selectOpenAnak, setSelectOpenAnak] = useState(false);
+  // const [selectOpenKamar, setSelectOpenKamar] = useState(false);
+  // const [jumlahDewasa, setJumlahDewasa] = useState("");
 
   useEffect(function () {
     window.addEventListener("scroll", () => {
-      setSelectOpenAnak(false);
-      setSelectOpenDewasa(false);
-      setSelectOpenKamar(false);
+      // setSelectOpenAnak(false);
+      // setSelectOpenDewasa(false);
+      // setSelectOpenKamar(false);
     });
   }, []);
 
+  const GenerateAngka = (maxJumlah) => {
+    return Array.from({ length: maxJumlah }, (_, index) => ({
+      label: (index + 1).toString(),
+      value: (index + 1).toString(),
+    }));
+  };
+
   return (
-    <div className="h-max bg-blue-50 px-10 py-16">
-      <p className="text-3xl text-center uppercase tracking-wide font-normal mb-9">
-        Cek Ketersediaan Kamar {jumlahDewasa}
-      </p>
-      <div className="flex w-full flex-wrap md:flex-nowrap mb-6 md:mb-0 gap-4 items-center">
-        <InputDateComp label="Check In" />
-        <InputDateComp label="Check Out" />
-        <Select
-          variant="bordered"
-          label="Jumlah Dewasa"
-          placeholder="Pilih Jumlah Dewasa"
-          onChange={(e) => setJumlahDewasa(e.target.value)}
-          className="bg-white rounded-xl"
-          isOpen={selectOpenDewasa}
-          onClick={() => setSelectOpenDewasa(!selectOpenDewasa)}
-        >
-          {jumlahs.map((jumlah) => (
-            <SelectItem
-              key={jumlah.value}
-              value={jumlah.value}
-              onClick={() => setSelectOpenDewasa(!selectOpenDewasa)}
-            >
-              {jumlah.label}
-            </SelectItem>
-          ))}
-        </Select>
-        <Select
-          variant="bordered"
-          label="Jumlah Anak"
-          placeholder="Pilih Jumlah Anak"
-          className="bg-white rounded-xl"
-          isOpen={selectOpenAnak}
-          onClick={() => setSelectOpenAnak(!selectOpenAnak)}
-        >
-          {jumlahs.map((jumlah) => (
-            <SelectItem
-              key={jumlah.value}
-              value={jumlah.value}
-              onClick={() => setSelectOpenAnak(!selectOpenAnak)}
-            >
-              {jumlah.label}
-            </SelectItem>
-          ))}
-        </Select>
-        <Select
-          variant="bordered"
-          label="Jumlah Kamar"
-          placeholder="Pilih Jumlah Kamar"
-          className="bg-white rounded-xl"
-          isOpen={selectOpenKamar}
-          onClick={() => setSelectOpenKamar(!selectOpenKamar)}
-        >
-          {jumlahs.map((jumlah) => (
-            <SelectItem
-              key={jumlah.value}
-              value={jumlah.value}
-              onClick={() => setSelectOpenKamar(!selectOpenKamar)}
-            >
-              {jumlah.label}
-            </SelectItem>
-          ))}
-        </Select>
-        <Button className="bg-primary hover:bg-secondary text-slate-100 font-medium">
-          Cari
-        </Button>
-        {/* <Calendar onChange={onChange} value={value}/> */}
-      </div>
+    <div className="h-max">
+      <form onSubmit={(e) => handleCari(e)}>
+        <div className="grid w-full grid-cols-1 md:grid-cols-3 lg:grid-cols-6 mb-6 md:mb-0 gap-4 items-center">
+          {/* check in : {new Date().toLocaleDateString() == tempCheckIn.toLocaleDateString() && new Date().getHours() > 14 ? ConvertTo24HourFormat(new Date(tempCheckIn.setHours(tempCheckIn.getHours() + 1)).toLocaleString().split(',')[1].trim()) : ConvertTo24HourFormat(new Date(tempCheckIn.setHours(14, 0, 0)).toLocaleString().split(',')[1].trim())} */}
+          <InputDateComp
+            label="Check In"
+            value={tempCheckIn}
+            setValue={setTempCheckIn}
+          />
+          {/* check out : {FormatDate(checkOut)} */}
+          <InputDateComp
+            label="Check Out"
+            value={tempCheckOut}
+            setValue={setTempCheckOut}
+          />
+          <Select
+            key="dewasa"
+            radius="sm"
+            startContent={<BsPerson />}
+            variant="bordered"
+            color="primary"
+            label="Jumlah Dewasa"
+            placeholder="Pilih Jumlah Dewasa"
+            selectedKeys={jumlahDewasa}
+            // defaultSelectedKeys={jumlahDewasa !== "" ? jumlahDewasa : undefined}
+            onChange={(e) => setTempJumlahDewasa(e.target.value)}
+            required
+          >
+            {GenerateAngka(maxJumlahDewasa).map(
+              (jumlah) =>
+                jumlah.value !== "" && (
+                  <SelectItem key={jumlah.value} value={jumlah.value}>
+                    {jumlah.label + " Dewasa"}
+                  </SelectItem>
+                )
+            )}
+          </Select>
+          <Select
+            key="anak"
+            radius="sm"
+            startContent={<MdOutlineChildCare />}
+            variant="bordered"
+            color="primary"
+            label="Jumlah Anak"
+            defaultSelectedKeys={jumlahAnak !== "" ? jumlahAnak : undefined}
+            placeholder="Pilih Jumlah Anak"
+            onChange={(e) => setTempJumlahAnak(e.target.value)}
+          >
+            {GenerateAngka(maxJumlahAnak).map((jumlah) => (
+              <SelectItem key={jumlah.value} value={jumlah.value}>
+                {jumlah.label + " Anak"}
+              </SelectItem>
+            ))}
+          </Select>
+          <Select
+            key="kamar"
+            radius="sm"
+            startContent={<LuBedDouble />}
+            variant="bordered"
+            color="primary"
+            label="Jumlah Kamar"
+            defaultSelectedKeys={jumlahKamar !== "" ? jumlahKamar : undefined}
+            placeholder="Pilih Jumlah Kamar"
+            onChange={(e) => setTempJumlahKamar(e.target.value)}
+          >
+            {GenerateAngka(maxJumlahKamar).map((jumlah) => (
+              <SelectItem key={jumlah.value} value={jumlah.value}>
+                {jumlah.label + " Kamar"}
+              </SelectItem>
+            ))}
+          </Select>
+          <Button
+            className="bg-primary hover:bg-secondary text-slate-100 font-medium w-full h-12"
+            radius="sm"
+            type="submit"
+          >
+            <FiSearch />
+            Cari
+          </Button>
+        </div>
+      </form>
       <p className="text-center mt-7 italic">
         Ingin memesan kamar lebih dari 10?
         <Link to="/kamar">
           <span className="not-italic font-medium"> Hubungi Kami</span>
         </Link>
       </p>
+      jumlah Dewasa : {jumlahDewasa}
+      jumlahAnak : {jumlahAnak}
+      jumlahKamar : {jumlahKamar}
     </div>
   );
 }

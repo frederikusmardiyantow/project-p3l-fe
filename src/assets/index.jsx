@@ -8,10 +8,15 @@ import kamar3 from './hotel/kamar-3.jpg'
 import kamar4 from './hotel/kamar-4.jpg'
 import kamar5 from './hotel/kamar-5.jpg'
 import kamar6 from './hotel/kamar-6.webp'
+import kolamRenang from './hotel/kolam-grand-atma.jpg'
+import pemandanganSore from './hotel/pemandangan-sore-grand-atma.webp'
+import viewLuar from './hotel/view-grand-atma.jpg'
 import bagianAtas from './hotel/bagian-atas.jpg'
 import hotelResep from './hotel/hotel-resep.jpg'
 import laundry from './layanan/laundry.jpg'
 import message from './layanan/message.jpg'
+import bintang from './star.png'
+import bgHead from './bg-head.png'
 
 
 export default {
@@ -28,5 +33,10 @@ export default {
     BAGIANATAS : bagianAtas,
     HOTELRESEP : hotelResep,
     LAUNDRY : laundry,
-    MESSAGE : message
+    MESSAGE : message,
+    KOLAMRENANG : kolamRenang,
+    PEMANDANGANSORE : pemandanganSore,
+    VIEWLUAR : viewLuar,
+    BINTANG : bintang,
+    BGHEAD : bgHead
 }

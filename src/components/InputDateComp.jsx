@@ -6,25 +6,26 @@ import {
   PopoverTrigger,
 } from "@nextui-org/react";
 import FormatDate from "../utils/FormatDate";
-import { useState } from "react";
 import Calendar from "react-calendar";
+import { LuCalendarDays } from "react-icons/lu";
 
-function InputDateComp({ label }) {
-  const [value, setValue] = useState(new Date());
+function InputDateComp({ label, value, setValue }) {
 
   return (
     <Popover placement="bottom">
       <PopoverTrigger>
         <Input
-          type="text"
+          radius="sm"
+          startContent={<LuCalendarDays/>}
+          color="primary"
           variant="bordered"
           label={label}
           value={FormatDate(value)}
-          className="bg-white rounded-xl text-lg"
+          className="!text-start"
         />
       </PopoverTrigger>
-      <PopoverContent>
-        <div className="w-50">
+      <PopoverContent className="bg-transparent shadow-none my-2">
+        <div className="">
           <Calendar onChange={setValue} value={value} minDate={new Date()} maxDate={new Date(new Date().setFullYear(new Date().getFullYear() + 1))}/>
         </div>
       </PopoverContent>

@@ -130,7 +130,7 @@ function NavbarComp({ kelas, setBg }) {
         />
         <NavbarBrand className="w-full">
           <Link to="/">
-            <img src={baseUrl+logo} alt="logo" className="h-12 max-w-none" />
+            <img src={baseUrl+logo} alt="logo" className="h-12 max-w-none"/>
           </Link>
         </NavbarBrand>
       </NavbarContent>

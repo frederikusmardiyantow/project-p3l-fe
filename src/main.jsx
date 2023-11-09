@@ -12,23 +12,26 @@ import 'react-calendar/dist/Calendar.css';
 import 'swiper/css';
 import 'swiper/css/grid';
 import 'swiper/css/pagination';
+import KamarProvider from "./contex/KamarContex";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <React.StrictMode>
     <NextUIProvider>
-      <App />
-      <ToastContainer
-        position="top-right"
-        autoClose={2000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss={false}
-        draggable={false}
-        pauseOnHover={false}
-        theme="colored"
-      />
+      <KamarProvider>
+        <App />
+        <ToastContainer
+          position="top-right"
+          autoClose={2000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss={false}
+          draggable={false}
+          pauseOnHover={false}
+          theme="colored"
+        />
+      </KamarProvider>
     </NextUIProvider>
   // </React.StrictMode>
 );

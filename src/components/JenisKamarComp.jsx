@@ -27,11 +27,9 @@ function JenisKamarComp() {
             .then((response) => {
               // res = response;
               setData(response.data.data);
-              console.log(data);
               toast.success(response.data.message);
             })
             .catch((error) => {
-              console.log(error.response);
               toast.error(error.response.data.message);
             });
         }

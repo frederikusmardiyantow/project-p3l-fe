@@ -16,7 +16,6 @@ import Register from "./pages/Customer/Auth/RegisterPage";
 import ResetPassword from "./pages/Customer/Auth/ResetPassword";
 import LoginAdminPage from "./pages/Pegawai/Auth/LoginAdminPage";
 import KamarAdmin from "./pages/Pegawai/Admin/KamarAdmin";
-import { useEffect } from "react";
 import SeasonSM from "./pages/Pegawai/SM/SeasonSM";
 import TarifSM from "./pages/Pegawai/SM/TarifSM";
 import FasilitasBerbayarSM from "./pages/Pegawai/SM/FasilitasBerbayarSM";
