@@ -19,7 +19,7 @@ import {
   useDisclosure,
 } from "@nextui-org/react";
 import Footer from "../../components/FooterComp";
-import ModalKonfAdd from "../../components/ModalKonfAdd";
+import ModalKonfYesNo from "../../components/ModalKonfYesNo";
 
 const ubahProfil = async (request, token) => {
   let res = null;
@@ -483,7 +483,7 @@ function ProfilPage() {
           )}
         </ModalContent>
       </Modal>
-      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   );
 }

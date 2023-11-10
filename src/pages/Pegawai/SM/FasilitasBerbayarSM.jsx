@@ -27,7 +27,7 @@ import { RiDeleteBin5Line } from "react-icons/ri";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormatCurrency from "../../../utils/FormatCurrency";
-import ModalKonfAdd from "../../../components/ModalKonfAdd";
+import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
 
 const columns = [
   { name: "NAMA LAYANAN", uid: "nama_layanan" },
@@ -562,8 +562,8 @@ function FasilitasBerbayarSM() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <ModalKonfAdd openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
-      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   );
 }

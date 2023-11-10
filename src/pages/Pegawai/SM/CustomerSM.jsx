@@ -27,7 +27,7 @@ import {
   import { toast } from "react-toastify";
 import { GiBeastEye } from "react-icons/gi";
 import FormatDate from "../../../utils/FormatDate";
-import ModalKonfAdd from "../../../components/ModalKonfAdd";
+import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
   
   const columns = [
     { name: "NAMA PEMIMPIN GROUP", uid: "nama_customer" },
@@ -541,7 +541,7 @@ function CustomerSM() {
           </ModalFooter> */}
         </ModalContent>
       </Modal>
-      <ModalKonfAdd openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   )
 }

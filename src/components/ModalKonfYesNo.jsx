@@ -8,7 +8,7 @@ import {
 } from "@nextui-org/react";
 
 // eslint-disable-next-line react/prop-types
-function ModalKonfAdd({ openKonfirm, setOpenKonfirm, onClickNo, onClickYes, isLoading }) {
+function ModalKonfYesNo({ openKonfirm, setOpenKonfirm, onClickNo, onClickYes, isLoading, pesan = "Apakah data-data sudah yakin benar?" }) {
   return (
     <Modal
       backdrop="opaque"
@@ -30,7 +30,7 @@ function ModalKonfAdd({ openKonfirm, setOpenKonfirm, onClickNo, onClickYes, isLo
       <ModalContent>
         <ModalHeader className="flex flex-col gap-1 "></ModalHeader>
         <ModalBody>
-          <p>Apakah data-data sudah yakin benar?</p>
+          <p>{pesan}</p>
         </ModalBody>
         <ModalFooter>
           <Button color="secondary" variant="light" onClick={onClickNo}>
@@ -48,4 +48,4 @@ function ModalKonfAdd({ openKonfirm, setOpenKonfirm, onClickNo, onClickYes, isLo
   );
 }
 
-export default ModalKonfAdd;
+export default ModalKonfYesNo;

@@ -68,7 +68,7 @@ function CekKetersediaanComp({
             color="primary"
             label="Jumlah Dewasa"
             placeholder="Pilih Jumlah Dewasa"
-            selectedKeys={jumlahDewasa}
+            defaultSelectedKeys={jumlahDewasa !== "" ? jumlahDewasa : undefined}
             // defaultSelectedKeys={jumlahDewasa !== "" ? jumlahDewasa : undefined}
             onChange={(e) => setTempJumlahDewasa(e.target.value)}
             required

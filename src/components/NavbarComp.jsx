@@ -22,7 +22,6 @@ import { LuHistory } from "react-icons/lu";
 import { BiSolidHelpCircle, BiSolidLogOut } from "react-icons/bi";
 import { toast } from "react-toastify";
 import axios from "axios";
-import assets from "../assets";
 import baseUrl from "../config";
 
 const logOut = async (request, token) => {
@@ -84,7 +83,7 @@ function NavbarComp({ kelas, setBg }) {
             setData(data);
             toast.success(response.data.message);
           })
-          .catch((error) => {
+          .catch(() => {
             localStorage.removeItem('apiKey');
             // navigate('/');
             // toast.error(error.response.data.message);

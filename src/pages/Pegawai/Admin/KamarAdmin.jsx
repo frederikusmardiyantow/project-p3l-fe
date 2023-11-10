@@ -30,7 +30,7 @@ import { BiEditAlt } from "react-icons/bi";
 import { MdOutlineSearch } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
 import FormatCurrency from "../../../utils/FormatCurrency";
-import ModalKonfAdd from "../../../components/ModalKonfAdd";
+import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
 
 const columns = [
   { name: "NOMOR KAMAR", uid: "nomor_kamar" },
@@ -802,8 +802,8 @@ export default function KamarAdmin() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <ModalKonfAdd openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
-      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   );
 }

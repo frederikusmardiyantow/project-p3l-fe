@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import FormatDate from "../../../utils/FormatDate";
 import FormatTime from "../../../utils/FormatTime";
-import ModalKonfAdd from "../../../components/ModalKonfAdd";
+import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
 
 const columns = [
     { name: "NAMA SEASON", uid: "nama_season" },
@@ -643,8 +643,8 @@ function SeasonSM() {
           </ModalFooter>
         </ModalContent>
       </Modal>
-      <ModalKonfAdd openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
-      <ModalKonfAdd openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmAdd} setOpenKonfirm={setKonfirmAdd} onClickNo={() => setKonfirmAdd(false)} onClickYes={(e) => {handleSubmit(e, "add"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
+      <ModalKonfYesNo openKonfirm={konfirmEdit} setOpenKonfirm={setKonfirmEdit} onClickNo={() => setKonfirmEdit(false)} onClickYes={(e) => {handleSubmit(e, "update"); setLoadingKonfirm(true)}} isLoading={loadingKonfirm} />
     </>
   );
 }
