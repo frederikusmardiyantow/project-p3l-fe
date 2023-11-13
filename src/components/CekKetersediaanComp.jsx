@@ -2,12 +2,13 @@
 import { Button, Select, SelectItem } from "@nextui-org/react";
 import { Link } from "react-router-dom";
 import InputDateComp from "./InputDateComp";
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import { BsPerson } from "react-icons/bs";
 import { MdOutlineChildCare } from "react-icons/md";
 import { LuBedDouble } from "react-icons/lu";
 import { FiSearch } from "react-icons/fi";
 import { KamarContex } from "../contex/KamarContex";
+import ConvertTo24HourFormat from "../utils/ConvertTo24HourFormat";
 
 function CekKetersediaanComp({
   handleCari,
@@ -24,19 +25,6 @@ function CekKetersediaanComp({
   const maxJumlahAnak = 10;
   const maxJumlahKamar = 10;
 
-  // const [selectOpenDewasa, setSelectOpenDewasa] = useState(false);
-  // const [selectOpenAnak, setSelectOpenAnak] = useState(false);
-  // const [selectOpenKamar, setSelectOpenKamar] = useState(false);
-  // const [jumlahDewasa, setJumlahDewasa] = useState("");
-
-  useEffect(function () {
-    window.addEventListener("scroll", () => {
-      // setSelectOpenAnak(false);
-      // setSelectOpenDewasa(false);
-      // setSelectOpenKamar(false);
-    });
-  }, []);
-
   const GenerateAngka = (maxJumlah) => {
     return Array.from({ length: maxJumlah }, (_, index) => ({
       label: (index + 1).toString(),
@@ -48,7 +36,7 @@ function CekKetersediaanComp({
     <div className="h-max">
       <form onSubmit={(e) => handleCari(e)}>
         <div className="grid w-full grid-cols-1 md:grid-cols-3 lg:grid-cols-6 mb-6 md:mb-0 gap-4 items-center">
-          {/* check in : {new Date().toLocaleDateString() == tempCheckIn.toLocaleDateString() && new Date().getHours() > 14 ? ConvertTo24HourFormat(new Date(tempCheckIn.setHours(tempCheckIn.getHours() + 1)).toLocaleString().split(',')[1].trim()) : ConvertTo24HourFormat(new Date(tempCheckIn.setHours(14, 0, 0)).toLocaleString().split(',')[1].trim())} */}
+          check in : {tempCheckIn.toLocaleDateString()}
           <InputDateComp
             label="Check In"
             value={tempCheckIn}

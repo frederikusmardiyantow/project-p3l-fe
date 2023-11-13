@@ -47,7 +47,6 @@ import { MdLibraryBooks } from "react-icons/md";
 import HitungJumlahMalam from "../../utils/HitungJumlahMalam";
 import TampunganPesananComp from "../../components/TampunganPesananComp";
 import ModalKonfYesNo from "../../components/ModalKonfYesNo";
-import { CustomCheckbox } from "../../components/CustomCheckBox";
 import FormatDate from "../../utils/FormatDate";
 
 async function KamarSedia(request) {
@@ -71,6 +70,25 @@ async function AddReservasi(request, token) {
   let res;
   await axios
     .post(`/transaksi/reservasi/kamar`, request, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    })
+    .then((response) => {
+      res = response;
+    })
+    .catch((error) => {
+      res = error.response;
+    });
+
+  return res;
+}
+
+async function AddTrxLayanan(request, token) {
+  let res;
+  await axios
+    .post(`/transaksi/layanan`, request, {
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
@@ -119,6 +137,7 @@ function KetersediaanKamar() {
   const [totalHargaPesanan, setTotalHargaPesanan] = useState(0);
   const token = localStorage.getItem("apiKey");
   const [konfirmLanjutPesan, setKonfirmLanjutPesan] = useState(false);
+  const [konfirmFixPesan, setKonfirmFixPesan] = useState(false);
   const [loadingKonfirm, setLoadingKonfirm] = useState(false);
   const navigation = useNavigate();
   const [isOpenReqFasilitas, onOpenChangeReqFasilitas] = useState(false);
@@ -143,10 +162,9 @@ function KetersediaanKamar() {
   const navigate = useNavigate();
   const handleCari = (e) => {
     e.preventDefault();
+    setJumlahMalam(0);
     setTampunganPesanan([]);
     setTotalHargaList([]);
-    console.log("cek in: " + tempCheckIn);
-    console.log("cek out: " + tempCheckOut);
     setCheckIn(tempCheckIn);
     setCheckOut(tempCheckOut);
     setJumlahAnak(tempJumlahAnak);
@@ -183,9 +201,9 @@ function KetersediaanKamar() {
 
   async function getKetersediaan() {
     let response;
-    console.log(
-      ConvertDateToYYYYMMDD(checkIn.toLocaleDateString()) + " " + waktu_checkIn
-    );
+    // console.log(
+    //   ConvertDateToYYYYMMDD(checkIn.toLocaleDateString()) + " " + waktu_checkIn
+    // );
     response = await KamarSedia({
       tgl_check_in: `${ConvertDateToYYYYMMDD(
         checkIn.toLocaleDateString()
@@ -209,7 +227,6 @@ function KetersediaanKamar() {
 
   useEffect(() => {
     getKetersediaan();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIn, checkOut, jumlahAnak, jumlahDewasa, jumlahKamar]);
 
   function handleLanjutPesan(e) {
@@ -269,7 +286,13 @@ function KetersediaanKamar() {
     onOpenChangeReqFasilitas(true);
   }
 
-  async function tambahReservasi() {
+  function handlePesanDiDetailPesanan() {
+    setLoadingKonfirm(false);
+    setKonfirmFixPesan(true);
+  }
+
+  async function handleYakinFixPesan(){
+    setLoadingKonfirm(true);
     const listReq = totalHargaList.map((item) => ({
       id_jenis_kamar: item.id,
       jumlah: item.jumlahPesanan,
@@ -281,7 +304,8 @@ function KetersediaanKamar() {
         kamar: listReq,
         jumlah_dewasa: jumlahDewasa,
         jumlah_anak_anak: jumlahAnak,
-        req_layanan: "",
+        jumlah_malam: jumlahMalam,
+        req_layanan: reqLayanan,
         waktu_check_in: `${ConvertDateToYYYYMMDD(
           checkIn.toLocaleDateString()
         )} ${waktu_checkIn}`,
@@ -294,14 +318,36 @@ function KetersediaanKamar() {
     );
     if (response.data.status === "T") {
       toast.success(response.data.message);
+      await addDataTrxFasilitas(response.data.data.id);
+      setTampunganPesanan([]);
+      setKonfirmFixPesan(false);
+      onOpenChangeDetailPesanan(false);
+      onOpenChangeReqFasilitas(false);
+      setKetersediaanKamar([]);
+      navigation('/riwayatReservasi');
     } else {
       toast.error(response.data.message);
-      console.log(listReq);
-      if (
-        response.data.status == "F" &&
-        response.data.message == "Kamu belum Login."
-      ) {
-        navigation("/login")
+    }
+    setLoadingKonfirm(false);
+    setKonfirmFixPesan(false);
+  }
+
+  async function addDataTrxFasilitas(idTrxReservasi){
+    if (fasilitasSelected.length != 0) {
+      for (const id of fasilitasSelected) {
+        const harga = dataFasilitas.find((item) => item.id === id)?.harga;
+        const response = await AddTrxLayanan(
+          {
+            id_layanan: id,
+            id_trx_reservasi: idTrxReservasi,
+            jumlah: 1,
+            total_harga: harga,
+            flag_stat: 1,
+          },
+          token
+        );
+        // Handle the response as needed
+        console.log('addDataFasilitas id: '+id+' dgn status: '+response.data.status);
       }
     }
   }
@@ -597,6 +643,7 @@ function KetersediaanKamar() {
       </div>
       <Footer />
       <ModalKonfYesNo openKonfirm={konfirmLanjutPesan} setOpenKonfirm={setKonfirmLanjutPesan} onClickNo={() => setKonfirmLanjutPesan(false)} onClickYes={(e) => {handleYakinLanjutPesan(e)}} isLoading={loadingKonfirm} pesan="Apakah Yakin ingin memesan kamar ini?"/>
+      <ModalKonfYesNo openKonfirm={konfirmFixPesan} setOpenKonfirm={setKonfirmFixPesan} onClickNo={() => setKonfirmFixPesan(false)} onClickYes={(e) => {handleYakinFixPesan(e)}} isLoading={loadingKonfirm} pesan="Tekan 'Ya' jika ingin benar benar memesan."/>
       <Modal
         isOpen={isOpenReqFasilitas}
         onOpenChange={onOpenChangeReqFasilitas}
@@ -695,6 +742,7 @@ function KetersediaanKamar() {
                   {checkOut &&
                     FormatDate(new Date(checkOut))}
                 </p>
+                <p>Jumlah Malam : {jumlahMalam} malam</p>
                 <p>Jumlah Dewasa : {jumlahDewasa}</p>
                 <p>Jumlah Anak-anak : {jumlahAnak}</p>
                 <p>Total Harga Kamar : {totalHargaPesanan && FormatCurrency(totalHargaPesanan)}</p>
@@ -731,7 +779,7 @@ function KetersediaanKamar() {
                             <TableCell>Kamar {tp.jenis_kamar}</TableCell>
                             <TableCell>Kapasitas {tp.jenis_kamars.kapasitas} Dewasa</TableCell>
                             <TableCell>{FormatCurrency(harga)}</TableCell>
-                            <TableCell>x{jumlah} malam</TableCell>
+                            <TableCell>x{jumlah} kamar</TableCell>
                           </TableRow>
                         );
                       })}
@@ -762,7 +810,7 @@ function KetersediaanKamar() {
             <Button
               color="primary"
               variant="solid"
-              // onClick={() => handleLanjutDiFasilitas()}
+              onClick={() => handlePesanDiDetailPesanan()}
               className="flex items-center"
             >
               Pesan
