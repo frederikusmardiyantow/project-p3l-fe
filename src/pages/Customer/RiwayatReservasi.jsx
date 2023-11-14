@@ -4,11 +4,12 @@ import NavbarComp from "../../components/NavbarComp";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Accordion,
   AccordionItem,
   Button,
+  Input,
   Spinner,
   Table,
   TableBody,
@@ -23,7 +24,7 @@ import FormatCurrency from "../../utils/FormatCurrency";
 
 import { Modal, ModalContent, ModalHeader, ModalBody } from "@nextui-org/react";
 import FormatDate from "../../utils/FormatDate";
-import { MdDownload } from "react-icons/md";
+import { MdDownload, MdOutlineSearch } from "react-icons/md";
 import ModalKonfYesNo from "../../components/ModalKonfYesNo";
 
 function RiwayatReservasi() {
@@ -38,6 +39,29 @@ function RiwayatReservasi() {
   const [idOtwBatal, setIdOtwBatal] = useState(0);
   const [idOtwBayar, setIdOtwBayar] = useState(0);
   const [file, setFile] = useState(null);
+  const [pesanPengembalianUang, setPesanPengembalianUang] = useState("");
+  const [paymentStatus, setPaymentStatus] = useState({});
+  const [loadingKirimBukti, setLoadingKirimBukti] = useState(false);
+  const [validasiBukti, setValidasiBukti] = useState([]);
+  const [filterData, setFilterData] = useState(""); //tuk filter data kamar
+
+  const dataFilter = data.trx_reservasis?.filter((item) => {
+    const idBooking = item?.id_booking.toLowerCase();
+    const status = item?.status.toLowerCase();
+    const filter = filterData.toLowerCase();
+
+    return (
+      idBooking.includes(filter) || status.includes(filter)
+    );
+  });
+
+  const itemFilter = useMemo(() => {
+    return dataFilter;
+  }, [dataFilter]);
+
+  const onClear = useCallback(() => {
+    setFilterData("");
+  }, []);
 
   async function detailPemesanan(id) {
     await axios
@@ -146,6 +170,7 @@ function RiwayatReservasi() {
   };
 
   const onFileUpload = async () => {
+    setLoadingKirimBukti(true);
     try {
       const formData = new FormData();
       formData.append("gambar_bukti", file);
@@ -161,13 +186,21 @@ function RiwayatReservasi() {
           },
         }
       );
-
+      setIdOtwBayar(0);
+      fetchData();
       toast.success("Upload sukses:", response.data);
     } catch (error) {
+      setValidasiBukti(error.response.data.message);
       toast.error('Gagal upload!');
       console.error("Upload gagal:", error);
       console.log(error.response.data)
+    } finally{
+      setLoadingKirimBukti(false);
     }
+  };
+  const handlePayment = (id) => {
+    // Lakukan sesuatu dengan pembayaran
+    setPaymentStatus(prevState => ({ ...prevState, [id]: !prevState[id] }));
   };
 
   return (
@@ -190,7 +223,26 @@ function RiwayatReservasi() {
           </div>
         </div>
         <div className="h-max ring-2 ring-primary my-10 w-[95%] flex flex-col gap-5 mx-auto rounded-md px-5 py-10 md:p-10">
-          {data?.trx_reservasis && data?.trx_reservasis.length !== 0 ? (
+          <div className="flex justify-center">
+            <Input
+              isClearable
+              classNames={{
+                base: "w-full sm:max-w-[44%]",
+                inputWrapper: "border-1 h-12 border-default-500 bg-white",
+              }}
+              placeholder="Cari berdasarkan Id Booking, Status"
+              size="sm"
+              startContent={
+                <MdOutlineSearch className="text-default-500 w-6 h-6 " />
+              }
+              value={filterData}
+              variant="bordered"
+              onChange={(e) => setFilterData(e.target.value)}
+              onClear={() => onClear()}
+              // onValueChange={onSearchChange}
+            />
+          </div>
+          {itemFilter && itemFilter.length !== 0 ? (
             <div className=" h-max w-full">
               <Accordion
                 variant="splitted"
@@ -203,7 +255,7 @@ function RiwayatReservasi() {
                   title="TERKONFIRMASI DAN SELESAI"
                   className=""
                 >
-                  {data.trx_reservasis.map(
+                  {itemFilter.map(
                     (tr) =>
                       (tr.status === "Terkonfirmasi" || tr.status === "Out") && (
                         <div
@@ -306,6 +358,30 @@ function RiwayatReservasi() {
                               </p>
                             </div>
                           </div>
+                          {tr.status != 'Out' &&
+                            <div className="mt-5">
+                              <p className="text-sm flex gap-1">
+                                <div className="animate-ping inline-flex h-2 w-2 rounded-full bg-red-500 opacity-75"></div>
+                                <span className="text-red-600 font-bold">Catatan:</span> Pengembalian uang hanya dapat dilakukan jika pembatalan dilakukan maksimal seminggu sebelum tanggal <i>check-in</i>
+                              </p>
+                              <div className="flex justify-center mt-3">
+                                <Button
+                                  className="bg-red-500 text-white hover:bg-red-600 rounded-md h-7 text-center"
+                                  onClick={() => {
+                                    setIdOtwBatal(tr.id);
+                                    setKonfirmPembatalan(true);
+                                    if (new Date(tr?.waktu_check_in) > new Date().setDate(new Date().getDate() + 7)) {
+                                      setPesanPengembalianUang('Uang reservasi akan dikembalikan');
+                                    } else {
+                                      setPesanPengembalianUang('Uang reservasi tidak dapat dikembalikan');
+                                    }
+                                  }}
+                                >
+                                  Batalkan Transaksi
+                                </Button>
+                              </div>
+                            </div>
+                          }
                         </div>
                       )
                   )}
@@ -315,7 +391,7 @@ function RiwayatReservasi() {
                   aria-label="MENUNGGU PEMBAYARAN"
                   title="MENUNGGU PEMBAYARAN"
                 >
-                  {data.trx_reservasis.map(
+                  {itemFilter.map(
                     (tr) =>
                       tr.status === "Menunggu Pembayaran" && (
                         <div key={tr.id}>
@@ -407,12 +483,11 @@ function RiwayatReservasi() {
                               </div>
                             </div>
                             <div className="flex gap-2 justify-center mt-5">
-                              
-                              {idOtwBayar!=0 ?
-                                <Button className="rounded-md h-7 bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => {setIdOtwBayar(0)}}>
+                              {paymentStatus[tr.id] ?
+                                <Button className="rounded-md h-7 bg-yellow-500 hover:bg-yellow-600 text-white" onClick={() => {handlePayment(tr.id); setIdOtwBayar(0)}}>
                                 Bayar Nanti
                                 </Button> :
-                                <Button className="rounded-md h-7 bg-orange-500 hover:bg-orange-600 text-white" onClick={() => {setIdOtwBayar(tr.id)}}>
+                                <Button className="rounded-md h-7 bg-orange-500 hover:bg-orange-600 text-white" onClick={() => {handlePayment(tr.id); setIdOtwBayar(tr.id)}}>
                                 Lakukan Pembayaran
                                 </Button>
                               }
@@ -427,18 +502,20 @@ function RiwayatReservasi() {
                               </Button>
                             </div>
                           </div>
-                          {idOtwBayar!=0 &&
+                          {paymentStatus[tr.id] &&
                           <div className="mt-4">
                             <div className="text-sm mb-3 border-l-5 border-orange-400 ms-1 ps-2">
                               Proses Pembayaran Reservasi dapat dilakukan menggunakan metode transfer bank dengan rincian sebagai berikut:
                               <div className="my-2">
-                                <p className="ml-2">No. Rekening: <span className="font-bold text-red-600 !text-base">5211169948</span></p>
+                                <p className="ml-2">Bank Diamond</p>
+                                <p className="ml-2">No. Rekening: <span className="font-bold text-red-600 !text-base">770011770022</span></p>
                                 <p className="ml-2">Atas Nama: <span className="font-bold">Hotel Grand Atma Yogyakarta</span></p>
                               </div>
                               <p>Pembayaran akan terkonfirmasi secara otomatis. Jika melewati 5 menit, status belum berubah silakan untuk melakukan konfirmasi kepada:</p>
                               <p className="ml-2 my-2">Sales & Marketing : <span className="font-bold">085701160012</span> <i>(telp/WA Only)</i></p>
                             </div>
                             <div className="file-upload-container w-full">
+                            <p className="text-sm text-red-500 text-center">{validasiBukti?.gambar_bukti && validasiBukti.gambar_bukti}</p>
                               <label
                                 htmlFor="file-upload"
                                 className="file-upload-label cursor-pointer"
@@ -461,12 +538,13 @@ function RiwayatReservasi() {
                                 type="file"
                                 id="file-upload"
                                 accept="image/*"
+                                onClick={() => setValidasiBukti([])}
                                 onChange={onFileChange}
                                 className="file-input hidden"
                               />
                               <div className="flex gap-1 my-3 justify-center text-center">
                                 <Button
-                                  onClick={() => setFile(null)}
+                                  onClick={() => {setFile(null); setValidasiBukti([])}}
                                   variant="light"
                                   color="danger"
                                   className="upload-button px-4 py-2 rounded-xl"
@@ -478,6 +556,7 @@ function RiwayatReservasi() {
                                   variant="solid"
                                   color="primary"
                                   className="upload-button px-4 py-2 "
+                                  isLoading={loadingKirimBukti}
                                 >
                                   Kirim
                                 </Button>
@@ -490,7 +569,7 @@ function RiwayatReservasi() {
                   )}
                 </AccordionItem>
                 <AccordionItem key="3" aria-label="BATAL" title="BATAL">
-                  {data.trx_reservasis.map(
+                  {itemFilter.map(
                     (tr) =>
                       tr.status === "Batal" && (
                         <div
@@ -757,12 +836,13 @@ function RiwayatReservasi() {
         onClickNo={() => {
           setKonfirmPembatalan(false);
           setIdOtwBatal(0);
+          setPesanPengembalianUang("");
         }}
         onClickYes={(e) => {
           handlePembatalan(e);
         }}
         isLoading={isLoadingKonfirm}
-        pesan="Yakin nih mau membatalkan reservasi kamar ini?"
+        pesan={`Yakin nih mau membatalkan reservasi kamar ini? ${pesanPengembalianUang}`}
       />
     </>
   );
