@@ -1,5 +1,9 @@
 import {
     Button,
+    Dropdown,
+    DropdownItem,
+    DropdownMenu,
+    DropdownTrigger,
     Input,
     Modal,
     ModalBody,
@@ -16,7 +20,6 @@ import {
     TableHeader,
     TableRow,
     Textarea,
-    Tooltip,
     User,
   } from "@nextui-org/react";
   import axios from "axios";
@@ -25,9 +28,11 @@ import {
   import { MdOutlineSearch } from "react-icons/md";
   import { useNavigate } from "react-router-dom";
   import { toast } from "react-toastify";
-import { GiBeastEye } from "react-icons/gi";
 import FormatDate from "../../../utils/FormatDate";
 import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
+import { PiDotsThreeOutlineVerticalDuotone } from "react-icons/pi";
+import { BiLayerPlus } from "react-icons/bi";
+import { LuCalendarCheck2 } from "react-icons/lu";
   
   const columns = [
     { name: "NAMA PEMIMPIN GROUP", uid: "nama_customer" },
@@ -250,11 +255,27 @@ function CustomerSM() {
         case "aksi":
           return (
             <div className="relative flex items-center gap-2">
-              <Tooltip content="Details">
-                <span className="text-lg text-secondary cursor-pointer active:opacity-50" onClick={() => {navigation(`/admin/customer/riwayat/${data?.id}`)}}>
-                  <GiBeastEye />
-                </span>
-              </Tooltip>
+              <span className="text-lg text-secondary cursor-pointer active:opacity-50" onClick={() => {}}>
+              <Dropdown>
+                <DropdownTrigger>
+                  <Button 
+                    variant="light"
+                    className="!p-0 !m-0 !w-5 min-w-0 hover:bg-none"
+                    color="default"
+                  >
+                    <PiDotsThreeOutlineVerticalDuotone/>
+                  </Button>
+                </DropdownTrigger>
+                <DropdownMenu variant="flat" aria-label="Dropdown menu with shortcut">
+                  <DropdownItem key="new" startContent={<BiLayerPlus/>} onClick={() => navigation(`/admin/customer/reservasi/${data?.id}/new`)}>
+                    <p className="font-bold">Buat Reservasi</p>
+                  </DropdownItem>
+                  <DropdownItem key="read" startContent={<LuCalendarCheck2/>} onClick={() => navigation(`/admin/customer/riwayat/${data?.id}`)}>
+                    <p className="font-bold">Riwayat Reservasi</p>
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
+              </span>
             </div>
           );
         default:
