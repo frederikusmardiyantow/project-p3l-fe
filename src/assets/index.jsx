@@ -17,6 +17,7 @@ import laundry from './layanan/laundry.jpg'
 import message from './layanan/message.jpg'
 import bintang from './star.png'
 import bgHead from './bg-head.png'
+import logoBank from './bank-diamond.png'
 
 
 export default {
@@ -38,5 +39,6 @@ export default {
     PEMANDANGANSORE : pemandanganSore,
     VIEWLUAR : viewLuar,
     BINTANG : bintang,
-    BGHEAD : bgHead
+    BGHEAD : bgHead,
+    BANKDIAMOND : logoBank
 }
