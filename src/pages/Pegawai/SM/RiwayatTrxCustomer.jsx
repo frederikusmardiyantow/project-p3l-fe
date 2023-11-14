@@ -23,13 +23,16 @@ import {
   TableBody,
   TableRow,
   TableCell,
+  Button,
 } from "@nextui-org/react";
 import FormatDate from "../../../utils/FormatDate";
 import FormatCurrency from "../../../utils/FormatCurrency";
 import { GiBeastEye } from "react-icons/gi";
-import { MdOutlineSearch } from "react-icons/md";
+import { MdDownload, MdOutlineSearch } from "react-icons/md";
 import { BsArrowLeftShort } from "react-icons/bs";
 import FormatDateTime from "../../../utils/FormatDateTime";
+import { FaMoneyBillWave } from "react-icons/fa";
+import { TbCalendarCancel } from "react-icons/tb";
 
 function RiwayatTrxCustomer() {
   const [dataRiwayatTrx, setDataRiwayatTrx] = useState({});
@@ -43,6 +46,14 @@ function RiwayatTrxCustomer() {
   const [page, setPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(3);
   // const navigate = useNavigate();
+  const [loadingCetakPDF, setLoadingCetakPDF] = useState(false);
+  const [openUploadBukti, setOpenUploadBukti] = useState(false);
+  const [inputJumlahUang, setInputJumlahUang] = useState(0);
+  const [file, setFile] = useState(null);
+  const [loadingKirimBukti, setLoadingKirimBukti] = useState(false);
+  const [validasiBukti, setValidasiBukti] = useState([]);
+  const [idOtwBayar, setIdOtwBayar] = useState(0);
+  const [totalHarga, setTotalHarga] = useState(0);
 
   const dataFilter = dataRiwayatTrx?.trx_reservasis?.filter((item) => {
     const idBooking = item?.id_booking.toLowerCase();
@@ -120,6 +131,78 @@ function RiwayatTrxCustomer() {
     setOpenDetail(true);
   }
 
+  async function cetakPdf(id) {
+    setLoadingCetakPDF(true);
+    await axios
+      .get(`/export/pdf/${id}`, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        responseType: "blob", // Mengatur tipe respons menjadi blob
+      })
+      .then((response) => {
+        setLoadingCetakPDF(false);
+        // Membuat blob URL dari respons PDF
+        const blob = new Blob([response.data], { type: "application/pdf" });
+        const url = window.URL.createObjectURL(blob);
+
+        // Membuka URL di tab atau jendela baru
+        window.open(url, "_blank");
+
+        // Hapus blob URL setelah PDF ditutup
+        window.URL.revokeObjectURL(url);
+
+        toast.success("PDF berhasil ditampilkan");
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+  }
+
+  function clickBtnUploadBukti(id, total) {
+    setOpenUploadBukti(true);
+    setIdOtwBayar(id);
+    setTotalHarga(total);
+  }
+  function clickBtnBatalPesanan() {}
+
+  const onFileChange = (event) => {
+    const selectedFile = event.target.files[0];
+    setFile(selectedFile);
+  };
+
+  const onFileUpload = async () => {
+    setLoadingKirimBukti(true);
+    try {
+      const formData = new FormData();
+      formData.append("gambar_bukti", file);
+      formData.append("uang_jaminan", inputJumlahUang);
+
+      // Change the API URL according to your needs
+      const response = await axios.post(
+        `/transaksi/reservasi/upload/${idOtwBayar}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setIdOtwBayar(0);
+      getDataRiwayatTrxByCustomer();
+      toast.success("Upload sukses:", response.data);
+    } catch (error) {
+      setValidasiBukti(error.response.data.message);
+      toast.error("Gagal upload!");
+      console.error("Upload gagal:", error);
+      console.log(error.response.data);
+    } finally {
+      setLoadingKirimBukti(false);
+    }
+  };
+
   return (
     <div>
       <p>
@@ -132,37 +215,45 @@ function RiwayatTrxCustomer() {
         RIWAYAT TRANSAKSI {dataRiwayatTrx?.nama_customer}
       </p>
       <div className="">
-        <div className="bg-white rounded-md mb-5 h-max ring-1">
-          <table cellPadding="20">
-            <td>
-              <tr>Nama Customer</tr>
-              <tr>Nama Institusi</tr>
-              <tr>Email</tr>
-              <tr>Nomor Telepon</tr>
-              <tr>Alamat</tr>
-            </td>
-            <td>
-              <tr>:</tr>
-              <tr>:</tr>
-              <tr>:</tr>
-              <tr>:</tr>
-              <tr>:</tr>
-            </td>
-            <td>
+        <div className="bg-white rounded-md mb-5 h-max ring-1 p-5">
+          <table cellPadding={2}>
+            <tbody>
               <tr>
-                {dataRiwayatTrx?.nama_customer
-                  ? dataRiwayatTrx?.nama_customer
-                  : "-"}
+                <td>Nama Customer</td>
+                <td>:</td>
+                <td>
+                  {dataRiwayatTrx?.nama_customer
+                    ? dataRiwayatTrx?.nama_customer
+                    : "-"}
+                </td>
               </tr>
               <tr>
-                {dataRiwayatTrx?.nama_institusi
-                  ? dataRiwayatTrx?.nama_institusi
-                  : "-"}
+                <td>Nama Institusi</td>
+                <td>:</td>
+                <td>
+                  {dataRiwayatTrx?.nama_institusi
+                    ? dataRiwayatTrx?.nama_institusi
+                    : "-"}
+                </td>
               </tr>
-              <tr>{dataRiwayatTrx?.email ? dataRiwayatTrx?.email : "-"}</tr>
-              <tr>{dataRiwayatTrx?.no_telp ? dataRiwayatTrx?.no_telp : "-"}</tr>
-              <tr>{dataRiwayatTrx?.alamat ? dataRiwayatTrx?.alamat : "-"}</tr>
-            </td>
+              <tr>
+                <td>Email</td>
+                <td>:</td>
+                <td>{dataRiwayatTrx?.email ? dataRiwayatTrx?.email : "-"}</td>
+              </tr>
+              <tr>
+                <td>Nomor Telepon</td>
+                <td>:</td>
+                <td>
+                  {dataRiwayatTrx?.no_telp ? dataRiwayatTrx?.no_telp : "-"}
+                </td>
+              </tr>
+              <tr>
+                <td>Alamat</td>
+                <td>:</td>
+                <td>{dataRiwayatTrx?.alamat ? dataRiwayatTrx?.alamat : "-"}</td>
+              </tr>
+            </tbody>
           </table>
         </div>
         <div className="mb-4">
@@ -213,12 +304,9 @@ function RiwayatTrxCustomer() {
           >
             {itemRiwayats && itemRiwayats?.length !== 0 ? (
               itemRiwayats?.map((item) => (
-                <>
+                <div key={item?.id}>
                   {item.id_pic == idPgwYgLogin && (
-                    <Card
-                      className="max-w-[400px] shadow-md hover:bg-gray-50"
-                      key={item?.id}
-                    >
+                    <Card className="max-w-[400px] shadow-md hover:bg-gray-50">
                       <CardHeader className="flex gap-3 items-center">
                         <Image
                           alt="star"
@@ -254,8 +342,8 @@ function RiwayatTrxCustomer() {
                           </p>
                           <p>
                             Nama Front Office :{" "}
-                            {item?.fo.nama_pegawai
-                              ? item?.fo.nama_pegawai
+                            {item?.fo?.nama_pegawai
+                              ? item?.fo?.nama_pegawai
                               : "-"}
                           </p>
                           <p>
@@ -289,19 +377,40 @@ function RiwayatTrxCustomer() {
                         </>
                       </CardBody>
                       <Divider />
-                      <CardFooter>
+                      <CardFooter className="flex flex-col gap-2">
                         <Tooltip content="Lihat Detail">
                           <div
-                            className="bg-primary hover:opacity-90 w-full h-8 rounded-lg text-white text-center flex items-center justify-center cursor-pointer"
+                            className="bg-primary hover:opacity-90 w-full h-8 rounded-lg text-white text-center flex items-center justify-center cursor-pointer gap-3"
                             onClick={() => clickBtnDetail(item?.id)}
                           >
-                            <GiBeastEye />
+                            <GiBeastEye />{" "}
+                            <span className="text-xs">
+                              Lihat Detail Transaksi
+                            </span>
                           </div>
                         </Tooltip>
+                        <Tooltip content="Upload Bukti Bayar">
+                          <div
+                            className="bg-secondary hover:opacity-90 w-full h-8 rounded-lg text-white text-center flex items-center justify-center cursor-pointer gap-3"
+                            onClick={() => {clickBtnUploadBukti(item?.id, item?.total_harga)}}
+                          >
+                            <FaMoneyBillWave />{" "}
+                            <span className="text-xs">
+                              Upload Bukti Pembayaran
+                            </span>
+                          </div>
+                        </Tooltip>
+                        <div
+                          className=" hover:opacity-90 w-max h-8 rounded-lg text-danger text-center flex items-center justify-center cursor-pointer gap-3"
+                          onClick={() => clickBtnBatalPesanan(item?.id)}
+                        >
+                          <TbCalendarCancel />{" "}
+                          <span className="text-xs">Batalkan Transaksi</span>
+                        </div>
                       </CardFooter>
                     </Card>
                   )}
-                </>
+                </div>
               ))
             ) : loadData ? (
               <Spinner />
@@ -346,120 +455,254 @@ function RiwayatTrxCustomer() {
         }}
       >
         <ModalContent>
-          <ModalHeader className="flex flex-col gap-1">
-            Detail Transaksi {dataDetailTrx?.id_booking}
+          <ModalHeader className="flex items-center justify-between gap-1">
+            <p>Detail Transaksi {dataDetailTrx?.id_booking}</p>
+            {(dataDetailTrx?.status == "Terkonfirmasi" ||
+              dataDetailTrx?.status == "Out") && (
+              <Button
+                variant="bordered"
+                className="me-5 flex items-center bg-primary text-white justify-center text-center"
+                onClick={() => cetakPdf(dataDetailTrx?.id)}
+                isLoading={loadingCetakPDF}
+              >
+                <MdDownload />
+                Cetak Tanda Terima
+              </Button>
+            )}
           </ModalHeader>
           <ModalBody>
-            <div className="space-y-2">
-              <p>
-                Tanggal Pesan :{" "}
-                {dataDetailTrx?.waktu_reservasi
-                  ? FormatDateTime(new Date(dataDetailTrx?.waktu_reservasi))
-                  : "-"}
-              </p>
-              {dataDetailTrx?.id_booking && (
-                <p>ID Booking : {dataDetailTrx?.id_booking}</p>
-              )}
-              <p>
-                Status : {dataDetailTrx?.status ? dataDetailTrx?.status : "-"}
-              </p>
-              {dataDetailTrx?.id_fo && (
+            {dataDetailTrx?.status == null ? (
+              <Spinner />
+            ) : (
+              <div className="space-y-2">
                 <p>
-                  Nama <i>Front Office</i> : {dataDetailTrx?.fo?.nama_pegawai}
+                  Tanggal Pesan :{" "}
+                  {dataDetailTrx?.waktu_reservasi
+                    ? FormatDateTime(new Date(dataDetailTrx?.waktu_reservasi))
+                    : "-"}
                 </p>
-              )}
-              <p>Jumlah Dewasa : {dataDetailTrx?.jumlah_dewasa}</p>
-              <p>Jumlah Anak-anak : {dataDetailTrx?.jumlah_anak_anak}</p>
-              <p>
-                Tanggal <i>Check in</i> :{" "}
-                {dataDetailTrx?.waktu_check_in &&
-                  FormatDate(new Date(dataDetailTrx?.waktu_check_in))}
-              </p>
-              <p>
-                Tanggal <i>Check out</i> :{" "}
-                {dataDetailTrx?.waktu_check_out &&
-                  FormatDate(new Date(dataDetailTrx?.waktu_check_out))}
-              </p>
-              <p>
-                Total Harga Kamar :{" "}
-                {dataDetailTrx?.total_harga &&
-                  FormatCurrency(dataDetailTrx?.total_harga)}
-              </p>
-              <div className="space-y-4 !mb-5">
-                <p>Pemesanan Kamar :</p>
-                <Table aria-label="Tabel Permintaan Layanan">
-                  <TableHeader>
-                    <TableColumn>JENIS KAMAR</TableColumn>
-                    <TableColumn>KAPASITAS</TableColumn>
-                    <TableColumn>HARGA PER MALAM</TableColumn>
-                    {/* <TableColumn>JUMLAH MALAM</TableColumn>
+                {dataDetailTrx?.id_booking && (
+                  <p>ID Booking : {dataDetailTrx?.id_booking}</p>
+                )}
+                <p>
+                  Status : {dataDetailTrx?.status ? dataDetailTrx?.status : "-"}
+                </p>
+                {dataDetailTrx?.id_fo && (
+                  <p>
+                    Nama <i>Front Office</i> : {dataDetailTrx?.fo?.nama_pegawai}
+                  </p>
+                )}
+                <p>Jumlah Dewasa : {dataDetailTrx?.jumlah_dewasa}</p>
+                <p>Jumlah Anak-anak : {dataDetailTrx?.jumlah_anak_anak}</p>
+                <p>
+                  Tanggal <i>Check in</i> :{" "}
+                  {dataDetailTrx?.waktu_check_in &&
+                    FormatDate(new Date(dataDetailTrx?.waktu_check_in))}
+                </p>
+                <p>
+                  Tanggal <i>Check out</i> :{" "}
+                  {dataDetailTrx?.waktu_check_out &&
+                    FormatDate(new Date(dataDetailTrx?.waktu_check_out))}
+                </p>
+                <p>
+                  Total Harga Kamar :{" "}
+                  {dataDetailTrx?.total_harga &&
+                    FormatCurrency(dataDetailTrx?.total_harga)}
+                </p>
+                <div className="space-y-4 !mb-5">
+                  <p>Pemesanan Kamar :</p>
+                  <Table aria-label="Tabel Permintaan Layanan">
+                    <TableHeader>
+                      <TableColumn>JENIS KAMAR</TableColumn>
+                      <TableColumn>KAPASITAS</TableColumn>
+                      <TableColumn>HARGA PER MALAM</TableColumn>
+                      {/* <TableColumn>JUMLAH MALAM</TableColumn>
                     <TableColumn>TOTAL HARGA</TableColumn> */}
-                    <TableColumn>NOMOR KAMAR</TableColumn>
-                    <TableColumn>JENIS BED</TableColumn>
-                    <TableColumn>AREA MEROKOK</TableColumn>
-                  </TableHeader>
-                  <TableBody>
-                    {dataDetailTrx?.trx_kamars &&
-                      dataDetailTrx?.trx_kamars?.map((tl) => (
-                        <TableRow key={tl?.id}>
-                          <TableCell>{tl?.jenis_kamars?.jenis_kamar}</TableCell>
-                          <TableCell>
-                            {tl?.jenis_kamars?.kapasitas} Dewasa
-                          </TableCell>
-                          <TableCell>
-                            {tl?.harga_per_malam &&
-                              FormatCurrency(tl?.harga_per_malam)}
-                          </TableCell>
-                          {/* <TableCell>{tl.jumlah_malam}</TableCell>
+                      <TableColumn>NOMOR KAMAR</TableColumn>
+                      <TableColumn>JENIS BED</TableColumn>
+                      <TableColumn>AREA MEROKOK</TableColumn>
+                    </TableHeader>
+                    <TableBody>
+                      {dataDetailTrx?.trx_kamars &&
+                        dataDetailTrx?.trx_kamars?.map((tl) => (
+                          <TableRow key={tl?.id}>
+                            <TableCell>
+                              {tl?.jenis_kamars?.jenis_kamar}
+                            </TableCell>
+                            <TableCell>
+                              {tl?.jenis_kamars?.kapasitas} Dewasa
+                            </TableCell>
+                            <TableCell>
+                              {tl?.harga_per_malam &&
+                                FormatCurrency(tl?.harga_per_malam)}
+                            </TableCell>
+                            {/* <TableCell>{tl.jumlah_malam}</TableCell>
                           <TableCell>{(tl.harga_per_malam * tl.jumlah_malam)}</TableCell> */}
-                          <TableCell>
-                            {tl.kamars !== null ? tl?.kamars?.nomor_kamar : "-"}
-                          </TableCell>
-                          <TableCell>
-                            {tl.kamars !== null ? tl?.kamars?.jenis_bed : "-"}
-                          </TableCell>
-                          <TableCell>
-                            {tl.kamars !== null
-                              ? tl?.kamars?.smoking_area === 1
-                                ? "Ya"
-                                : "Tidak"
-                              : "-"}
-                          </TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
+                            <TableCell>
+                              {tl.kamars !== null
+                                ? tl?.kamars?.nomor_kamar
+                                : "-"}
+                            </TableCell>
+                            <TableCell>
+                              {tl.kamars !== null ? tl?.kamars?.jenis_bed : "-"}
+                            </TableCell>
+                            <TableCell>
+                              {tl.kamars !== null
+                                ? tl?.kamars?.smoking_area === 1
+                                  ? "Ya"
+                                  : "Tidak"
+                                : "-"}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </div>
+                <div className="space-y-4">
+                  <p>Permintaan Layanan :</p>
+                  <Table aria-label="Tabel Permintaan Layanan">
+                    <TableHeader>
+                      <TableColumn>NAMA LAYANAN</TableColumn>
+                      <TableColumn>JUMLAH</TableColumn>
+                      <TableColumn>SATUAN</TableColumn>
+                      <TableColumn>TOTAL HARGA</TableColumn>
+                      <TableColumn>WAKTU PEMAKAIAN</TableColumn>
+                      <TableColumn>KETERANGAN</TableColumn>
+                    </TableHeader>
+                    <TableBody
+                      emptyContent={"Tidak ada Data Permintaan Layanan"}
+                    >
+                      {dataDetailTrx?.trx_layanans &&
+                        dataDetailTrx.trx_layanans.map((tl) => (
+                          <TableRow key={tl.id}>
+                            <TableCell>{tl.layanans.nama_layanan}</TableCell>
+                            <TableCell>{tl.jumlah}</TableCell>
+                            <TableCell>{tl.layanans.satuan}</TableCell>
+                            <TableCell>
+                              {tl?.total_harga &&
+                                FormatCurrency(tl?.total_harga)}
+                            </TableCell>
+                            <TableCell>
+                              {tl?.waktu_pemakaian &&
+                                FormatDateTime(new Date(tl?.waktu_pemakaian))}
+                            </TableCell>
+                            <TableCell>{tl.layanans.keterangan}</TableCell>
+                          </TableRow>
+                        ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
-              <div className="space-y-4">
-                <p>Permintaan Layanan :</p>
-                <Table aria-label="Tabel Permintaan Layanan">
-                  <TableHeader>
-                    <TableColumn>NAMA LAYANAN</TableColumn>
-                    <TableColumn>JUMLAH</TableColumn>
-                    <TableColumn>SATUAN</TableColumn>
-                    <TableColumn>TOTAL HARGA</TableColumn>
-                    <TableColumn>WAKTU PEMAKAIAN</TableColumn>
-                    <TableColumn>KETERANGAN</TableColumn>
-                  </TableHeader>
-                  <TableBody emptyContent={"Tidak ada Data Permintaan Layanan"}>
-                    {dataDetailTrx?.trx_layanans &&
-                      dataDetailTrx.trx_layanans.map((tl) => (
-                        <TableRow key={tl.id}>
-                          <TableCell>{tl.layanans.nama_layanan}</TableCell>
-                          <TableCell>{tl.jumlah}</TableCell>
-                          <TableCell>{tl.layanans.satuan}</TableCell>
-                          <TableCell>
-                            {tl?.total_harga && FormatCurrency(tl?.total_harga)}
-                          </TableCell>
-                          <TableCell>
-                            {tl?.waktu_pemakaian &&
-                              FormatDateTime(new Date(tl?.waktu_pemakaian))}
-                          </TableCell>
-                          <TableCell>{tl.layanans.keterangan}</TableCell>
-                        </TableRow>
-                      ))}
-                  </TableBody>
-                </Table>
+            )}
+          </ModalBody>
+          {/* <ModalFooter>
+            <Button
+              color="danger"
+              variant="light"
+              onClick={() => onOpenChange(false)}
+            >
+              Tutup
+            </Button>
+          </ModalFooter> */}
+        </ModalContent>
+      </Modal>
+      <Modal
+        backdrop="opaque"
+        scrollBehavior="inside"
+        isOpen={openUploadBukti}
+        onOpenChange={setOpenUploadBukti}
+        placement="center"
+        classNames={{
+          body: "py-6",
+          backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+          //   base: "border-[#292f46] ",
+          // header: "bg-primary text-white w-full h-full",
+          //   footer: "border-t-[1px] border-[#292f46]",
+          closeButton: "hover:bg-white/5 active:bg-white/10",
+        }}
+        className="md:max-w-3xl overflow-hidden"
+        onClose={() => {}}
+      >
+        <ModalContent>
+          {/* <ModalHeader className="flex items-center justify-between gap-1">
+            <p>Detail Transaksi {dataDetailTrx?.id_booking}</p>
+          </ModalHeader> */}
+          <ModalBody>
+            <p>Upload Bukti Pembayaran Customer Group</p>
+            <p className="text-sm">Total harga untuk reservasi ini adalah {FormatCurrency(totalHarga)}. Untuk melanjutkan reservasi, wajib membayar uang muka minimal 50%, yakni minimal {FormatCurrency(totalHarga/2)}</p>
+            <div>
+              <label htmlFor="jmlUang">Masukkan Jumlah Uang Terbayar:</label>
+              <Input
+                type="number"
+                id="jmlUang"
+                variant="bordered"
+                className="w-1/2 m-0"
+                classNames={{ input: ["text-lg"] }}
+                onChange={(e) => setInputJumlahUang(e.target.value)}
+                isInvalid={parseInt(inputJumlahUang) < parseInt(totalHarga)/2}
+                errorMessage={parseInt(inputJumlahUang) < parseInt(totalHarga)/2 && "Uang masih kurang. Setidaknya 50% harus dibayar!"}
+              />
+              <p className="text-xs mt-1">
+                Terbayar :{" "}
+                <span className="font-bold text-sm">
+                  {FormatCurrency(inputJumlahUang)}
+                </span>
+              </p>
+            </div>
+            <div>
+              <div className="file-upload-container w-full">
+                <p className="text-sm text-red-500 text-center">
+                  {validasiBukti?.gambar_bukti && validasiBukti.gambar_bukti}
+                </p>
+                <label
+                  htmlFor="file-upload"
+                  className="file-upload-label cursor-pointer"
+                >
+                  <div className="file-upload-box border-dashed border-2 border-gray-300 rounded w-full h-48 flex items-center justify-center overflow-hidden">
+                    {file ? (
+                      <img
+                        src={URL.createObjectURL(file)}
+                        alt="Selected"
+                        className="file-preview w-full h-full object-contain"
+                      />
+                    ) : (
+                      <span className="file-placeholder text-gray-500 text-center">
+                        <i>Drag & Drop</i> atau klik untuk unggah bukti
+                        pembayaran
+                      </span>
+                    )}
+                  </div>
+                </label>
+                <input
+                  type="file"
+                  id="file-upload"
+                  accept="image/*"
+                  onClick={() => setValidasiBukti([])}
+                  onChange={onFileChange}
+                  className="file-input hidden"
+                />
+                <div className="flex gap-1 my-3 justify-center text-center">
+                  <Button
+                    onClick={() => {
+                      setFile(null);
+                      setValidasiBukti([]);
+                    }}
+                    variant="light"
+                    color="danger"
+                    className="upload-button px-4 py-2 rounded-xl"
+                  >
+                    Reset Gambar
+                  </Button>
+                  <Button
+                    onClick={onFileUpload}
+                    variant="solid"
+                    color="primary"
+                    className="upload-button px-4 py-2 "
+                    isLoading={loadingKirimBukti}
+                  >
+                    Kirim
+                  </Button>
+                </div>
               </div>
             </div>
           </ModalBody>
