@@ -203,7 +203,6 @@ function KetersediaanKamar() {
     let tempJumlah = 0;
     if (totalHargaList.length != 0) {
       totalHargaList?.map((list) => { temp += list.hargaTotal; tempJumlah += list.jumlahPesanan; });
-console.log(totalHargaList);
       setTotalHargaPesanan(temp);
       setTotalJumlahKamarPesanan(tempJumlah);
     }
@@ -454,7 +453,7 @@ console.log(totalHargaList);
               {ketersediaanKamar?.length != 0 ? (
                 ketersediaanKamar?.map((kamar, index) => (
                   <Card
-                    className="w-full shadow-md rounded-md mb-2 overflow-hidden"
+                    className={`w-full shadow-md rounded-md mb-2 overflow-hidden ${kamar.jumlah_kamar == 0 && 'opacity-50'}`}
                     key={index}
                   >
                     <CardHeader className="flex gap-3">
@@ -501,7 +500,7 @@ console.log(totalHargaList);
                             {kamar.jenis_kamars.ukuran_kamar}m<sup>2</sup>
                           </p>
                           <p className="text-[12px] text-danger mb-3">
-                            Tersisa {kamar.jumlah_kamar} kamar
+                            {kamar.jumlah_kamar == 0 ? 'Kamar sudah habis' : `Tersisa ${kamar.jumlah_kamar} kamar`}
                           </p>
                           <div className="grid grid-cols-2">
                             {kamar?.jenis_kamars?.fasilitas_kamar &&
@@ -533,7 +532,7 @@ console.log(totalHargaList);
                               tampunganPesanan.findIndex(
                                 (tampungan) =>
                                   tampungan.jenis_kamar === kamar.jenis_kamar
-                              ) != -1 ? (
+                              ) != -1 || kamar.jumlah_kamar == 0 ? (
                                 <Button
                                   className="uppercase bg-primary h-3/4 rounded-md p-3 flex items-center text-white font-medium w-24 justify-center cursor-pointer hover:bg-blue-700"
                                   isDisabled

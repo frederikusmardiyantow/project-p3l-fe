@@ -2,7 +2,7 @@
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 import { FaAsymmetrik } from "react-icons/fa";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import CekKetersediaanComp from "../../../components/CekKetersediaanComp";
 import { KamarContex } from "../../../contex/KamarContex";
@@ -43,7 +43,7 @@ import { TbAirConditioning } from "react-icons/tb";
 import { RiSafe2Fill } from "react-icons/ri";
 import assets from "../../../assets";
 import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
-import { BsArrowRightShort } from "react-icons/bs";
+import { BsArrowLeftShort, BsArrowRightShort } from "react-icons/bs";
 import FormatDate from "../../../utils/FormatDate";
 
 async function KamarSedia(request) {
@@ -324,7 +324,7 @@ function AddReservasiGroup() {
       onOpenChangeDetailPesanan(false);
       onOpenChangeReqFasilitas(false);
       setKetersediaanKamar([]);
-      // navigation('/riwayatReservasi');
+      navigation(`/admin/customer/riwayat/${idCust}`);
     } else {
       toast.error(response.data.message);
     }
@@ -355,6 +355,12 @@ function AddReservasiGroup() {
 
   return (
     <div>
+      <p>
+        <Link to="/admin/customer" className="flex gap-1 items-center text-sm">
+          <BsArrowLeftShort />
+          Kembali
+        </Link>
+      </p>
       <p className="font-extrabold text-3xl">Reservasi Group</p>
       <p className="text-gray-600 my-2">
         {dataCustomer.nama_customer} - {dataCustomer.nama_institusi} - email:{" "}

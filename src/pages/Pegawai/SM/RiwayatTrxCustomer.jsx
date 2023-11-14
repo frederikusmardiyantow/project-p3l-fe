@@ -24,6 +24,7 @@ import {
   TableRow,
   TableCell,
   Button,
+  ModalFooter,
 } from "@nextui-org/react";
 import FormatDate from "../../../utils/FormatDate";
 import FormatCurrency from "../../../utils/FormatCurrency";
@@ -33,6 +34,7 @@ import { BsArrowLeftShort } from "react-icons/bs";
 import FormatDateTime from "../../../utils/FormatDateTime";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { TbCalendarCancel } from "react-icons/tb";
+import ModalKonfYesNo from "../../../components/ModalKonfYesNo";
 
 function RiwayatTrxCustomer() {
   const [dataRiwayatTrx, setDataRiwayatTrx] = useState({});
@@ -54,6 +56,11 @@ function RiwayatTrxCustomer() {
   const [validasiBukti, setValidasiBukti] = useState([]);
   const [idOtwBayar, setIdOtwBayar] = useState(0);
   const [totalHarga, setTotalHarga] = useState(0);
+  const [konfirmPembatalan, setKonfirmPembatalan] = useState(false);
+  const [isLoadingKonfirm, setIsLoadingKonfirm] = useState(false);
+  const [idOtwBatal, setIdOtwBatal] = useState(0);
+  const [pesanPengembalianUang, setPesanPengembalianUang] = useState("");
+  const [openCatatan, setOpenCatatan] = useState(false);
 
   const dataFilter = dataRiwayatTrx?.trx_reservasis?.filter((item) => {
     const idBooking = item?.id_booking.toLowerCase();
@@ -165,7 +172,19 @@ function RiwayatTrxCustomer() {
     setIdOtwBayar(id);
     setTotalHarga(total);
   }
-  function clickBtnBatalPesanan() {}
+  function clickBtnBatalPesanan(tr) {
+    setIdOtwBatal(tr.id);
+    if(tr.status == 'Menunggu Pembayaran'){
+      setKonfirmPembatalan(true)
+    }else{
+      setOpenCatatan(true);
+    }
+    if (new Date(tr?.waktu_check_in) > new Date().setDate(new Date().getDate() + 7)) {
+      setPesanPengembalianUang('akan dikembalikan');
+    } else {
+      setPesanPengembalianUang('tidak dapat dikembalikan');
+    }
+  }
 
   const onFileChange = (event) => {
     const selectedFile = event.target.files[0];
@@ -192,6 +211,7 @@ function RiwayatTrxCustomer() {
       );
       setIdOtwBayar(0);
       getDataRiwayatTrxByCustomer();
+      setOpenUploadBukti(false);
       toast.success("Upload sukses:", response.data);
     } catch (error) {
       setValidasiBukti(error.response.data.message);
@@ -202,6 +222,29 @@ function RiwayatTrxCustomer() {
       setLoadingKirimBukti(false);
     }
   };
+  async function handlePembatalan(e) {
+    e.preventDefault();
+    setIsLoadingKonfirm(true);
+
+    await axios
+      .post(`/transaksi/pembatalan/kamar/${idOtwBatal}`, null, {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((response) => {
+        getDataRiwayatTrxByCustomer();
+        toast.success(response.data.message);
+      })
+      .catch((error) => {
+        toast.error(error.response.data.message);
+      });
+    setKonfirmPembatalan(false);
+    setIdOtwBatal(0);
+    setIsLoadingKonfirm(false);
+  }
+
 
   return (
     <div>
@@ -306,7 +349,7 @@ function RiwayatTrxCustomer() {
               itemRiwayats?.map((item) => (
                 <div key={item?.id}>
                   {item.id_pic == idPgwYgLogin && (
-                    <Card className="max-w-[400px] shadow-md hover:bg-gray-50">
+                    <Card className={`max-w-[400px] shadow-md hover:bg-opacity-90 ${item?.status == 'Batal' ? 'bg-danger-100' : item?.status == 'In' ? 'bg-success-100' : item?.status == 'Out' ? 'bg-success-300' : 'bg-gray-100'} `} >
                       <CardHeader className="flex gap-3 items-center">
                         <Image
                           alt="star"
@@ -322,9 +365,13 @@ function RiwayatTrxCustomer() {
                           <p
                             className={`text-small text-white border-1 rounded-md px-2 py-1 w-max ${
                               item?.status === "In"
+                                ? "bg-green-600"
+                                : item?.status === "Terkonfirmasi"
                                 ? "bg-green-400"
                                 : item?.status === "Out"
                                 ? "bg-red-400"
+                                : item?.status === "Batal"
+                                ? "bg-red-600"
                                 : "bg-secondary"
                             }`}
                           >
@@ -389,24 +436,28 @@ function RiwayatTrxCustomer() {
                             </span>
                           </div>
                         </Tooltip>
-                        <Tooltip content="Upload Bukti Bayar">
+                        {item?.status == 'Menunggu Pembayaran' && 
+                          <Tooltip content="Upload Bukti Bayar">
+                            <div
+                              className="bg-secondary hover:opacity-90 w-full h-8 rounded-lg text-white text-center flex items-center justify-center cursor-pointer gap-3"
+                              onClick={() => {clickBtnUploadBukti(item?.id, item?.total_harga)}}
+                            >
+                              <FaMoneyBillWave />{" "}
+                              <span className="text-xs">
+                                Upload Bukti Pembayaran
+                              </span>
+                            </div>
+                          </Tooltip>
+                        }
+                        {(item?.status != 'Out' && item?.status != 'Batal') &&
                           <div
-                            className="bg-secondary hover:opacity-90 w-full h-8 rounded-lg text-white text-center flex items-center justify-center cursor-pointer gap-3"
-                            onClick={() => {clickBtnUploadBukti(item?.id, item?.total_harga)}}
+                            className=" hover:opacity-90 w-max h-8 rounded-lg text-danger text-center flex items-center justify-center cursor-pointer gap-3"
+                            onClick={() => clickBtnBatalPesanan(item)}
                           >
-                            <FaMoneyBillWave />{" "}
-                            <span className="text-xs">
-                              Upload Bukti Pembayaran
-                            </span>
+                            <TbCalendarCancel />{" "}
+                            <span className="text-xs">Batalkan Transaksi</span>
                           </div>
-                        </Tooltip>
-                        <div
-                          className=" hover:opacity-90 w-max h-8 rounded-lg text-danger text-center flex items-center justify-center cursor-pointer gap-3"
-                          onClick={() => clickBtnBatalPesanan(item?.id)}
-                        >
-                          <TbCalendarCancel />{" "}
-                          <span className="text-xs">Batalkan Transaksi</span>
-                        </div>
+                        }
                       </CardFooter>
                     </Card>
                   )}
@@ -458,7 +509,7 @@ function RiwayatTrxCustomer() {
           <ModalHeader className="flex items-center justify-between gap-1">
             <p>Detail Transaksi {dataDetailTrx?.id_booking}</p>
             {(dataDetailTrx?.status == "Terkonfirmasi" ||
-              dataDetailTrx?.status == "Out") && (
+              dataDetailTrx?.status == "In") && (
               <Button
                 variant="bordered"
                 className="me-5 flex items-center bg-primary text-white justify-center text-center"
@@ -475,40 +526,50 @@ function RiwayatTrxCustomer() {
               <Spinner />
             ) : (
               <div className="space-y-2">
-                <p>
-                  Tanggal Pesan :{" "}
-                  {dataDetailTrx?.waktu_reservasi
-                    ? FormatDateTime(new Date(dataDetailTrx?.waktu_reservasi))
-                    : "-"}
-                </p>
-                {dataDetailTrx?.id_booking && (
-                  <p>ID Booking : {dataDetailTrx?.id_booking}</p>
-                )}
-                <p>
-                  Status : {dataDetailTrx?.status ? dataDetailTrx?.status : "-"}
-                </p>
-                {dataDetailTrx?.id_fo && (
+              <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className="space-y-2">
                   <p>
-                    Nama <i>Front Office</i> : {dataDetailTrx?.fo?.nama_pegawai}
+                    Tanggal Pesan :{" "}
+                    {dataDetailTrx?.waktu_reservasi
+                      ? FormatDateTime(new Date(dataDetailTrx?.waktu_reservasi))
+                      : "-"}
                   </p>
-                )}
-                <p>Jumlah Dewasa : {dataDetailTrx?.jumlah_dewasa}</p>
-                <p>Jumlah Anak-anak : {dataDetailTrx?.jumlah_anak_anak}</p>
-                <p>
-                  Tanggal <i>Check in</i> :{" "}
-                  {dataDetailTrx?.waktu_check_in &&
-                    FormatDate(new Date(dataDetailTrx?.waktu_check_in))}
-                </p>
-                <p>
-                  Tanggal <i>Check out</i> :{" "}
-                  {dataDetailTrx?.waktu_check_out &&
-                    FormatDate(new Date(dataDetailTrx?.waktu_check_out))}
-                </p>
-                <p>
-                  Total Harga Kamar :{" "}
-                  {dataDetailTrx?.total_harga &&
-                    FormatCurrency(dataDetailTrx?.total_harga)}
-                </p>
+                  {dataDetailTrx?.id_booking && (
+                    <p>ID Booking : {dataDetailTrx?.id_booking}</p>
+                  )}
+                  <p>
+                    Status : {dataDetailTrx?.status ? dataDetailTrx?.status : "-"}
+                  </p>
+                  {dataDetailTrx?.id_fo && (
+                    <p>
+                      Nama <i>Front Office</i> : {dataDetailTrx?.fo?.nama_pegawai}
+                    </p>
+                  )}
+                  <p>Jumlah Dewasa : {dataDetailTrx?.jumlah_dewasa}</p>
+                  <p>Jumlah Anak-anak : {dataDetailTrx?.jumlah_anak_anak}</p>
+                  <p>
+                    Tanggal <i>Check in</i> :{" "}
+                    {dataDetailTrx?.waktu_check_in &&
+                      FormatDate(new Date(dataDetailTrx?.waktu_check_in))}
+                  </p>
+                  <p>
+                    Tanggal <i>Check out</i> :{" "}
+                    {dataDetailTrx?.waktu_check_out &&
+                      FormatDate(new Date(dataDetailTrx?.waktu_check_out))}
+                  </p>
+                  <p>
+                    Total Harga Kamar :{" "}
+                    {dataDetailTrx?.total_harga &&
+                      FormatCurrency(dataDetailTrx?.total_harga)}
+                  </p>
+                </div>
+                <div className="flex justify-center items-center">
+                  {dataDetailTrx?.bukti_pembayaran ? 
+                    <img src={`https://project-p3l-be.frederikus.com/storage/posts/${dataDetailTrx?.bukti_pembayaran}`} alt="bukti" /> :
+                    <p className="text-sm text-gray-400 italic">Belum Melakukan Pembayaran</p>
+                  }
+                </div>
+              </div>
                 <div className="space-y-4 !mb-5">
                   <p>Pemesanan Kamar :</p>
                   <Table aria-label="Tabel Permintaan Layanan">
@@ -630,6 +691,14 @@ function RiwayatTrxCustomer() {
           <ModalBody>
             <p>Upload Bukti Pembayaran Customer Group</p>
             <p className="text-sm">Total harga untuk reservasi ini adalah {FormatCurrency(totalHarga)}. Untuk melanjutkan reservasi, wajib membayar uang muka minimal 50%, yakni minimal {FormatCurrency(totalHarga/2)}</p>
+            <div className="text-sm mb-3 border-l-5 border-orange-400 ms-1 ps-2">
+              Proses Pembayaran Reservasi dapat dilakukan menggunakan metode transfer bank dengan rincian sebagai berikut:
+              <div className="my-2">
+                <p className="ml-2">Bank Diamond</p>
+                <p className="ml-2">No. Rekening: <span className="font-bold text-red-600 !text-base">770011770022</span></p>
+                <p className="ml-2">Atas Nama: <span className="font-bold">Hotel Grand Atma Yogyakarta</span></p>
+              </div>
+            </div>
             <div>
               <label htmlFor="jmlUang">Masukkan Jumlah Uang Terbayar:</label>
               <Input
@@ -715,6 +784,68 @@ function RiwayatTrxCustomer() {
               Tutup
             </Button>
           </ModalFooter> */}
+        </ModalContent>
+      </Modal>
+      <ModalKonfYesNo
+        openKonfirm={konfirmPembatalan}
+        setOpenKonfirm={setKonfirmPembatalan}
+        onClickNo={() => {
+          setKonfirmPembatalan(false);
+          setIdOtwBatal(0);
+          setPesanPengembalianUang("");
+        }}
+        onClickYes={(e) => {
+          handlePembatalan(e);
+        }}
+        isLoading={isLoadingKonfirm}
+        pesan={`Yakin nih mau membatalkan reservasi kamar ini?`}
+      />
+      <Modal
+        backdrop="opaque"
+        scrollBehavior="inside"
+        isOpen={openCatatan}
+        onOpenChange={setOpenCatatan}
+        placement="center"
+        classNames={{
+          body: "py-6",
+          backdrop: "bg-[#292f46]/50 backdrop-opacity-40",
+          //   base: "border-[#292f46] ",
+          // header: "bg-primary text-white w-full h-full",
+          //   footer: "border-t-[1px] border-[#292f46]",
+          closeButton: "hover:bg-white/5 active:bg-white/10",
+        }}
+        className="md:max-w-3xl overflow-hidden"
+        onClose={() => {}}
+      >
+        <ModalContent>
+          {/* <ModalHeader className="flex items-center justify-between gap-1">
+            <p>Detail Transaksi {dataDetailTrx?.id_booking}</p>
+          </ModalHeader> */}
+          <ModalBody>
+            <p className="text-base">
+              <div className="animate-ping inline-flex h-2 w-2 rounded-full bg-red-500 opacity-75"></div>
+              <span className="text-red-600 font-bold">Catatan:</span> 
+              <p>Pengembalian uang hanya dapat dilakukan jika pembatalan dilakukan maksimal seminggu sebelum tanggal <i>check-in</i>
+              <br /><br />
+              Bila melakukan pembatalan untuk transaksi ini, maka uang yang sudah dibayarkan sebagai dp atau jaminan <span className="font-bold">{pesanPengembalianUang}</span></p>
+            </p>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="danger"
+              variant="light"
+              onClick={() => setOpenCatatan(false)}
+            >
+              Tidak
+            </Button>
+            <Button
+              color="primary"
+              variant="bordered"
+              onClick={() => {setOpenCatatan(false); setKonfirmPembatalan(true)}}
+            >
+              Mengerti
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </div>

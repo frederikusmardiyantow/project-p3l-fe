@@ -21,14 +21,14 @@ function CekKetersediaanComp({
   keterangan = "true",
 }) {
   const { jumlahAnak, jumlahDewasa, jumlahKamar } = useContext(KamarContex);
-  const maxJumlahDewasa = 10;
-  const maxJumlahAnak = 10;
-  const maxJumlahKamar = 10;
+  const maxJumlahDewasa = 11;
+  const maxJumlahAnak = 11;
+  const maxJumlahKamar = 11;
 
   const GenerateAngka = (maxJumlah) => {
     return Array.from({ length: maxJumlah }, (_, index) => ({
-      label: (index + 1).toString(),
-      value: (index + 1).toString(),
+      label: (index).toString(),
+      value: (index).toString(),
     }));
   };
 
