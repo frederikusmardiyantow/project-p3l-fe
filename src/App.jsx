@@ -22,6 +22,7 @@ import FasilitasBerbayarSM from "./pages/Pegawai/SM/FasilitasBerbayarSM";
 import CustomerSM from "./pages/Pegawai/SM/CustomerSM";
 import RiwayatTrxCustomer from "./pages/Pegawai/SM/RiwayatTrxCustomer";
 import KetersediaanKamar from "./pages/Customer/KetersediaanKamar";
+import AddReservasiGroup from "./pages/Pegawai/SM/AddReservasiGroup";
 
 axios.defaults.baseURL = "https://project-p3l-be.frederikus.com/api";
 
@@ -56,6 +57,7 @@ function App() {
           <Route path="fasilitas" element={<FasilitasBerbayarSM/>}/>
           <Route path="customer" element={<CustomerSM/>}/>
           <Route path="customer/riwayat/:idCust" element={<RiwayatTrxCustomer/>}/>
+          <Route path="customer/reservasi/:idCust/new" element={<AddReservasiGroup/>}/>
         </Route>
         {/* <Route path="admin/*" element={
           <SidebarComp>
