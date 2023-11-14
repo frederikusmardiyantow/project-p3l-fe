@@ -114,27 +114,34 @@ function KetersediaanKamar() {
   // const [konfirmBatalAmbil, setKonfirmBatalAmbil] = useState(false);
   // const [loadingKonfirm, setLoadingKonfirm] = useState(false);
   // const [tempKeyPesanan, setTempKeyPesanan] = useState({}); //untuk menampung key sebagai bantuan untuk hapus dari keranjang (untuk menghapus dari array tampunganPesanan)
-  const waktu_checkIn =
-    new Date().toLocaleDateString() == checkIn.toLocaleDateString() &&
-    new Date().getHours() >= 14
-      ? ConvertTo24HourFormat(
-          new Date(checkIn.setHours(checkIn.getHours() + 1))
-            .toLocaleString()
-            .split(",")[1]
-            .trim()
-        )
-      : ConvertTo24HourFormat(
-          new Date(checkIn.setHours(14, 0, 0))
-            .toLocaleString()
-            .split(",")[1]
-            .trim()
-        );
+  // const waktu_checkIn =
+  //   new Date().toLocaleDateString() == checkIn.toLocaleDateString() &&
+  //   new Date().getHours() >= 14
+  //     ? ConvertTo24HourFormat(
+  //         new Date(checkIn.setHours(checkIn.getHours() + 1))
+  //           .toLocaleString()
+  //           .split(",")[1]
+  //           .trim()
+  //       )
+  //     : ConvertTo24HourFormat(
+  //         new Date(checkIn.setHours(14, 0, 0))
+  //           .toLocaleString()
+  //           .split(",")[1]
+  //           .trim()
+  //       );
+  const waktu_checkIn = ConvertTo24HourFormat(
+            new Date(checkIn.setHours(14, 0, 0))
+              .toLocaleString()
+              .split(",")[1]
+              .trim()
+          );
   const waktu_checkOut = ConvertTo24HourFormat(
     new Date(checkOut.setHours(12, 0, 0)).toLocaleString().split(",")[1].trim()
   );
   const [jumlahMalam, setJumlahMalam] = useState(0);
   const [totalHargaList, setTotalHargaList] = useState([]);
   const [totalHargaPesanan, setTotalHargaPesanan] = useState(0);
+  const [totalJumlahKamarPesanan, setTotalJumlahKamarPesanan] = useState(0);
   const token = localStorage.getItem("apiKey");
   const [konfirmLanjutPesan, setKonfirmLanjutPesan] = useState(false);
   const [konfirmFixPesan, setKonfirmFixPesan] = useState(false);
@@ -193,9 +200,12 @@ function KetersediaanKamar() {
 
   useEffect(() => {
     let temp = 0;
+    let tempJumlah = 0;
     if (totalHargaList.length != 0) {
-      totalHargaList?.map((list) => (temp += list.hargaTotal));
+      totalHargaList?.map((list) => { temp += list.hargaTotal; tempJumlah += list.jumlahPesanan; });
+console.log(totalHargaList);
       setTotalHargaPesanan(temp);
+      setTotalJumlahKamarPesanan(tempJumlah);
     }
   }, [totalHargaList]);
 
@@ -204,6 +214,8 @@ function KetersediaanKamar() {
     // console.log(
     //   ConvertDateToYYYYMMDD(checkIn.toLocaleDateString()) + " " + waktu_checkIn
     // );
+    // console.log('waktu-cek-in: '+waktu_checkIn);
+    // console.log('waktu-cek-out: '+waktu_checkOut);
     response = await KamarSedia({
       tgl_check_in: `${ConvertDateToYYYYMMDD(
         checkIn.toLocaleDateString()
@@ -438,6 +450,7 @@ function KetersediaanKamar() {
           <div className="bg-gray-50 rounded-xl mx-3 h-max flex flex-col lg:flex-row gap-2 p-5">
             <div className="h-full w-full lg:w-[68%]">
               {/* {JSON.stringify(totalHargaList)} */}
+              {/* jumlah kamar yg dipesan: {totalJumlahKamarPesanan} */}
               {ketersediaanKamar?.length != 0 ? (
                 ketersediaanKamar?.map((kamar, index) => (
                   <Card
@@ -472,7 +485,7 @@ function KetersediaanKamar() {
                             />
                           </div>
                           <div className="flex justify-center text-center">
-                            <Button className="mt-2 w-3/4 bg-orange-400 hover:bg-orange-500 text-white tracking-wide rounded-md">
+                            <Button className="mt-2 w-3/4 bg-orange-400 hover:bg-orange-500 text-white tracking-wide rounded-md" onClick={() => navigation(`/kamar/${kamar.id_jenis_kamar}`)}>
                               Lihat Rincian
                             </Button>
                           </div>
@@ -684,6 +697,7 @@ function KetersediaanKamar() {
                     //   statusColor="success"
                     // />
                     <Checkbox value={data.id} key={data.id}>{data.nama_layanan}</Checkbox>
+
                   ))}
                   </div>
                   
