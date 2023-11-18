@@ -19,7 +19,6 @@ import {
   CheckboxGroup,
   Divider,
   Image,
-  Input,
   Modal,
   ModalBody,
   ModalContent,
@@ -115,7 +114,7 @@ function AddReservasiGroup() {
 
 
   const [fasilitasSelected, setFasilitasSelected] = useState([]);
-  const [dateJumlahFasilitas, setDateJumlahFasilitas] = useState(false);
+  // const [dateJumlahFasilitas, setDateJumlahFasilitas] = useState(false);
   const [dataFasilitas, setDataFasilitas] = useState([]);
   const [reqLayanan, setReqLayanan] = useState("");
   const [stringFasilitasDiPilih, setStringFasilitasDiPilih] = useState("");
@@ -587,7 +586,7 @@ function AddReservasiGroup() {
               </div>
               <p className="text-md !p-0 !m-0">Fasilitas tambahan yang dapat dipilih:</p>
               <div className="flex flex-col gap-1 w-full">
-              <CheckboxGroup
+                <CheckboxGroup
                   // label="Fasilitas Tambahan"
                   value={fasilitasSelected}
                   onChange={setFasilitasSelected}
@@ -597,12 +596,8 @@ function AddReservasiGroup() {
                 >
                   <div className="grid grid-cols-3 gap-3">
                   {dataFasilitas && dataFasilitas?.map((data) => (
-                    <div key={data.id}>
-                      <Checkbox value={data.id} onChange={() => setDateJumlahFasilitas(!dateJumlahFasilitas)}>{data.nama_layanan}</Checkbox>
-                      {dateJumlahFasilitas && 
-                        <Input type="number"/>
-                      }
-                    </div>
+                    <Checkbox value={data.id} key={data.id}>{data.nama_layanan}</Checkbox>
+
                   ))}
                   </div>
                   

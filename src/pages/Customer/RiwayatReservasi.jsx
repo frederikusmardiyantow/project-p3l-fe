@@ -45,13 +45,13 @@ function RiwayatReservasi() {
   const [validasiBukti, setValidasiBukti] = useState([]);
   const [filterData, setFilterData] = useState(""); //tuk filter data kamar
 
-  const dataFilter = data.trx_reservasis?.filter((item) => {
-    const idBooking = item?.id_booking.toLowerCase();
-    const status = item?.status.toLowerCase();
-    const filter = filterData.toLowerCase();
+  const dataFilter = data?.trx_reservasis?.filter((item) => {
+    const idBooking = item?.id_booking?.toLowerCase();
+    const status = item?.status?.toLowerCase();
+    const filter = filterData?.toLowerCase();
 
     return (
-      idBooking.includes(filter) || status.includes(filter)
+      idBooking?.includes(filter) || status?.includes(filter)
     );
   });
 
