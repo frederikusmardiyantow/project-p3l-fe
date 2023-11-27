@@ -23,6 +23,11 @@ import CustomerSM from "./pages/Pegawai/SM/CustomerSM";
 import RiwayatTrxCustomer from "./pages/Pegawai/SM/RiwayatTrxCustomer";
 import KetersediaanKamar from "./pages/Customer/KetersediaanKamar";
 import AddReservasiGroup from "./pages/Pegawai/SM/AddReservasiGroup";
+import Reservasi from "./pages/Pegawai/FO/Reservasi";
+import PilihKamar from "./pages/Pegawai/FO/PilihKamar";
+import CustBaruPerBulan from "./pages/Pegawai/Laporan/CustBaruPerBulan";
+import CustPemesanTerbanyak from "./pages/Pegawai/Laporan/CustPemesanTerbanyak";
+import CheckOut from "./pages/Pegawai/FO/CheckOut";
 
 axios.defaults.baseURL = "https://project-p3l-be.frederikus.com/api";
 
@@ -58,6 +63,11 @@ function App() {
           <Route path="customer" element={<CustomerSM/>}/>
           <Route path="customer/riwayat/:idCust" element={<RiwayatTrxCustomer/>}/>
           <Route path="customer/reservasi/:idCust/new" element={<AddReservasiGroup/>}/>
+          <Route path="reservasi" element={<Reservasi/>}/>
+          <Route path="reservasi/:idReservasi/pilih-kamar" element={<PilihKamar/>}/>
+          <Route path="laporan/CustomerBaruPerBulan" element={<CustBaruPerBulan/>}/>
+          <Route path="laporan/PemesanTerbanyak" element={<CustPemesanTerbanyak/>}/>
+          <Route path="checkOut/:idReservasi" element={<CheckOut/>}/>
         </Route>
         {/* <Route path="admin/*" element={
           <SidebarComp>

@@ -136,7 +136,7 @@ function RiwayatReservasi() {
         toast.success("PDF berhasil ditampilkan");
       })
       .catch((error) => {
-        toast.error(error.response.data.message);
+        toast.error(`PDF Gagal ditampilkan! ${error}`);
       });
   }
 
