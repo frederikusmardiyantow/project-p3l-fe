@@ -100,6 +100,41 @@ function SidebarComp() {
       link: "/admin/customer",
       role: "Sales & Marketing",
     },
+    {
+      index: 6,
+      title: "Reservasi",
+      src: <FaUsersGear />,
+      link: "/admin/reservasi",
+      role: "Front Office",
+    },
+    {
+      index: 7,
+      title: "Laporan Customer Baru",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/CustomerBaruPerBulan",
+      role: "General Manager",
+    },
+    {
+      index: 8,
+      title: "Laporan Pemesan Terbanyak",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/PemesanTerbanyak",
+      role: "General Manager",
+    },
+    {
+      index: 9,
+      title: "Laporan Customer Baru",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/CustomerBaruPerBulan",
+      role: "Owner",
+    },
+    {
+      index: 10,
+      title: "Laporan Pemesan Terbanyak",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/PemesanTerbanyak",
+      role: "Owner",
+    },
   ];
 
   async function fetchData() {
