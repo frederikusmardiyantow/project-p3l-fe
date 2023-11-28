@@ -92,7 +92,7 @@ function CheckOut() {
           month: '2-digit',
           day: '2-digit',
         }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2'),
-        total_harga_kamar : dataDetail.totalHargaKamarAll,
+        total_harga_kamar : dataDetail.totalHargaKamarAll * dataDetail.jumlah_malam,
         total_harga_layanan : dataDetail.totalHargaLayananAll,
         pajak_layanan : dataDetail.pajakLayanan,
         total_semua : dataDetail.total_semua,
