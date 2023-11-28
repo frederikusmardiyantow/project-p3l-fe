@@ -135,6 +135,34 @@ function SidebarComp() {
       link: "/admin/laporan/PemesanTerbanyak",
       role: "Owner",
     },
+    {
+      index: 11,
+      title: "Laporan Pendapatan Bulanan",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/PendapatanPerBulan",
+      role: "General Manager",
+    },
+    {
+      index: 12,
+      title: "Laporan Pendapatan Bulanan",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/PendapatanPerBulan",
+      role: "Owner",
+    },
+    {
+      index: 13,
+      title: "Laporan Jumlah Tamu",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/JumlahTamu",
+      role: "General Manager",
+    },
+    {
+      index: 14,
+      title: "Laporan Jumlah Tamu",
+      src: <FaUsersGear />,
+      link: "/admin/laporan/JumlahTamu",
+      role: "Owner",
+    },
   ];
 
   async function fetchData() {
