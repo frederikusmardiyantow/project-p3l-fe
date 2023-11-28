@@ -28,6 +28,8 @@ import PilihKamar from "./pages/Pegawai/FO/PilihKamar";
 import CustBaruPerBulan from "./pages/Pegawai/Laporan/CustBaruPerBulan";
 import CustPemesanTerbanyak from "./pages/Pegawai/Laporan/CustPemesanTerbanyak";
 import CheckOut from "./pages/Pegawai/FO/CheckOut";
+import PendapatanBulanan from "./pages/Pegawai/Laporan/PendapatanBulanan";
+import JumlahTamu from "./pages/Pegawai/Laporan/JumlahTamu";
 
 axios.defaults.baseURL = "https://project-p3l-be.frederikus.com/api";
 
@@ -67,6 +69,8 @@ function App() {
           <Route path="reservasi/:idReservasi/pilih-kamar" element={<PilihKamar/>}/>
           <Route path="laporan/CustomerBaruPerBulan" element={<CustBaruPerBulan/>}/>
           <Route path="laporan/PemesanTerbanyak" element={<CustPemesanTerbanyak/>}/>
+          <Route path="laporan/PendapatanPerBulan" element={<PendapatanBulanan/>}/>
+          <Route path="laporan/JumlahTamu" element={<JumlahTamu/>}/>
           <Route path="checkOut/:idReservasi" element={<CheckOut/>}/>
         </Route>
         {/* <Route path="admin/*" element={
