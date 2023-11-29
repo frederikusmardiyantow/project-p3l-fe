@@ -300,7 +300,7 @@ function CheckOut() {
       </div>
       <div className="mt-5">
         {dataDetail.kurang_atau_kembali < 0 ?
-          <Button fullWidth className="bg-red-600 text-medium text-white hover:bg-red-500 uppercase">Lakukan Check Out</Button>
+          <Button fullWidth className="bg-red-600 text-medium text-white hover:bg-red-500 uppercase" onClick={() => {setKonfirmCheckOut(true)}}>Lakukan Check Out</Button>
         :
           <Button fullWidth className="bg-green-600 text-medium text-white hover:bg-green-500 uppercase" onClick={() => {onOpenChangeInputKekurangan(true)}}>Input Pembayaran Kekurangan</Button>
         }

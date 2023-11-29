@@ -47,7 +47,7 @@ function JumlahTamu() {
           },
           title: {
             display: true,
-            text: 'Grafik Jumlah Tamu',
+            text: `Grafik Jumlah Tamu Bulan ${bulanLaporan} Tahun ${tahunLaporan}`,
           },
         },
       };

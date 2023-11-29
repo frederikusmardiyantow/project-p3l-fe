@@ -46,7 +46,7 @@ function PendapatanBulanan() {
           },
           title: {
             display: true,
-            text: 'Chart.js Bar Chart',
+            text: `Grafik Pendapatan Bulanan Tahun ${tahunLaporan}`,
           },
         },
       };
