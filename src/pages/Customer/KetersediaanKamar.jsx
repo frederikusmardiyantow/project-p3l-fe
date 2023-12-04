@@ -141,7 +141,7 @@ function KetersediaanKamar() {
   const [jumlahMalam, setJumlahMalam] = useState(0);
   const [totalHargaList, setTotalHargaList] = useState([]);
   const [totalHargaPesanan, setTotalHargaPesanan] = useState(0);
-  const [totalJumlahKamarPesanan, setTotalJumlahKamarPesanan] = useState(0);
+  // const [totalJumlahKamarPesanan, setTotalJumlahKamarPesanan] = useState(0);
   const token = localStorage.getItem("apiKey");
   const [konfirmLanjutPesan, setKonfirmLanjutPesan] = useState(false);
   const [konfirmFixPesan, setKonfirmFixPesan] = useState(false);
@@ -200,11 +200,14 @@ function KetersediaanKamar() {
 
   useEffect(() => {
     let temp = 0;
-    let tempJumlah = 0;
+    // let tempJumlah = 0;
     if (totalHargaList.length != 0) {
-      totalHargaList?.map((list) => { temp += list.hargaTotal; tempJumlah += list.jumlahPesanan; });
+      totalHargaList?.map((list) => { 
+        temp += list.hargaTotal; 
+        // tempJumlah += list.jumlahPesanan; 
+      });
       setTotalHargaPesanan(temp);
-      setTotalJumlahKamarPesanan(tempJumlah);
+      // setTotalJumlahKamarPesanan(tempJumlah);
     }
   }, [totalHargaList]);
 
@@ -238,6 +241,7 @@ function KetersediaanKamar() {
 
   useEffect(() => {
     getKetersediaan();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIn, checkOut, jumlahAnak, jumlahDewasa, jumlahKamar]);
 
   function handleLanjutPesan(e) {

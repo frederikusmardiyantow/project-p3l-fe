@@ -179,9 +179,6 @@ function CekKetersediaanComp({
           </Link>
         </p>
       )}
-      jumlah Dewasa : {jumlahDewasa}
-      jumlahAnak : {jumlahAnak}
-      jumlahKamar : {jumlahKamar}
     </div>
   );
 }
