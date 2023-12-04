@@ -66,6 +66,16 @@ function Home() {
     };
   }, []);
 
+  useState(() => {
+    document.addEventListener("scroll", () => {
+      if (window.scrollY > 50) {
+        setIsMenu(true);
+      } else {
+        setIsMenu(false);
+      }
+    });
+  })
+
   return (
     <>
       <div className="flex flex-col text-blue-900">

@@ -18,6 +18,7 @@ import message from './layanan/message.jpg'
 import bintang from './star.png'
 import bgHead from './bg-head.png'
 import logoBank from './bank-diamond.png'
+import notFound from './404.gif'
 
 
 export default {
@@ -40,5 +41,6 @@ export default {
     VIEWLUAR : viewLuar,
     BINTANG : bintang,
     BGHEAD : bgHead,
-    BANKDIAMOND : logoBank
+    BANKDIAMOND : logoBank,
+    NOTFOUND : notFound
 }

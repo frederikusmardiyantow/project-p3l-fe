@@ -6,15 +6,16 @@ import "./JenisKamarComp.css"
 import { FiUsers } from "react-icons/fi";
 import { IoMdResize } from "react-icons/io";
 import { BiBed } from "react-icons/bi";
-import { BsArrowRight } from "react-icons/bs";
+// import { BsArrowRight } from "react-icons/bs";
 import { Button } from "@nextui-org/react";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 function JenisKamarComp() {
     const [data, setData] = useState([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         async function fetchData() {
@@ -65,9 +66,9 @@ function JenisKamarComp() {
                         <div className="flex items-center gap-4">
                             <div className="flex items-center gap-2"><BiBed/> 1 x Tempat Tidur Queen</div>
                         </div>
-                        <div className="italic !mt-3"><Link to={`/kamar/${jk.id}`} className="flex items-center gap-1">Lihat selengkapnya <BsArrowRight/></Link></div>
+                        {/* <div className="italic !mt-3"><Link to={`/kamar/${jk.id}`} className="flex items-center gap-1">Lihat selengkapnya <BsArrowRight/></Link></div> */}
                         <div className="flex justify-center fixed bottom-10 left-0 w-full">
-                            <Button className="uppercase bg-primary text-white font-medium rounded-md w-3/4 text-center !mt-5 tracking-widest">Pesan Sekarang!</Button>
+                            <Button className="uppercase bg-primary text-white font-medium rounded-md w-3/4 text-center !mt-5 tracking-widest" onClick={() => navigate(`/kamar/${jk.id}`)}>Lihat Selengkapnya..</Button>
                         </div>
                     </div>
                 </SwiperSlide>

@@ -178,7 +178,7 @@ function NavbarComp({ kelas, setBg }) {
                   bgNavbar
                     ? "bg-gray-300 text-primary"
                     : "bg-primary text-slate-200"
-                } font-semibold hover:bg-secondary`}
+                } font-semibold hover:bg-secondary rounded-md`}
                 variant="flat"
               >
                 Masuk

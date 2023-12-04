@@ -1,6 +1,5 @@
 /* eslint-disable react/prop-types */
 import { Button, Input, Select, SelectItem } from "@nextui-org/react";
-import { Link } from "react-router-dom";
 import InputDateComp from "./InputDateComp";
 import { useContext } from "react";
 import { BsPerson } from "react-icons/bs";
@@ -174,9 +173,7 @@ function CekKetersediaanComp({
       {keterangan == "true" && (
         <p className="text-center mt-7 italic">
           Ingin memesan kamar lebih dari 10?
-          <Link to="/kamar">
-            <span className="not-italic font-medium"> Hubungi Kami</span>
-          </Link>
+          <a href="https://wa.me/6285701160012?text=Halo%20*Grand%20Atma%20Hotel*.%20Saya%20ingin%20memesan%20kamar%20lebih%20dari%2010.%20Bagaimana%20alur%20yang%20harus%20saya%20lakukan%3F%0A%0ATerima%20kasih" className="not-italic font-medium"> Hubungi Kami</a>
         </p>
       )}
     </div>
