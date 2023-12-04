@@ -22,7 +22,7 @@ import { LuHistory } from "react-icons/lu";
 import { BiSolidHelpCircle, BiSolidLogOut } from "react-icons/bi";
 import { toast } from "react-toastify";
 import axios from "axios";
-import baseUrl from "../config";
+import baseUrl from "../config.js";
 
 const logOut = async (request, token) => {
   let res = null;

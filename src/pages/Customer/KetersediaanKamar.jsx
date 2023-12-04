@@ -37,7 +37,7 @@ import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { KamarContex } from "../../contex/KamarContex";
-import baseUrl from "../../config";
+import baseUrl from "../../config.js";
 import ConvertTo24HourFormat from "../../utils/ConvertTo24HourFormat";
 import { useNavigate } from "react-router-dom";
 import ConvertDateToYYYYMMDD from "../../utils/ConvertDateToYYYYMMDD";
@@ -411,6 +411,7 @@ function KetersediaanKamar() {
     <>
       <NavbarComp kelas="fixed" setBg="true" />
       <BsBookmarkStar className="absolute h-20 -left-36 top-24 w-full text-[rgba(209,209,209,.5)]" />
+      {/* <img src={} className="fixed top-0 left-0 right-0 bottom-0 " /> */}
       <div className={`bg-[url('${baseUrl}bg-head.png')] bg-cover `}>
         <div className="mt-20 mb-10">
           <div className="relative h-full flex md:justify-between md:flex-row flex-col">
