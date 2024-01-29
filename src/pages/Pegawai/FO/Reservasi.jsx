@@ -139,7 +139,6 @@ function Reservasi() {
         responseType: "blob", // Mengatur tipe respons menjadi blob
       })
       .then((response) => {
-        setLoadNotaLunas(false);
         // Membuat blob URL dari respons PDF
         const blob = new Blob([response.data], { type: "application/pdf" });
         const url = window.URL.createObjectURL(blob);
@@ -339,7 +338,7 @@ function Reservasi() {
               <Button className={`text-white rounded-md`} isIconOnly size="sm" color="success" onClick={() => {setKonfirmCheckIn(true); setTempId(data.id)}} isDisabled={data.status != 'Terkonfirmasi'}>CI</Button> 
               : 
               data.status == 'Batal' ? '' : data.status == 'Out' ? 
-              <Button className={`text-white rounded-md`} size="sm" color="primary" onClick={() => {cetakPdfNotaLunas(data.id); setLoadNotaLunas(true)}} isLoading={loadNotaLunas}>Cetak Nota</Button>
+              <Button className={`text-white rounded-md`} size="sm" color="primary" onClick={async () => {setLoadNotaLunas(true); await cetakPdfNotaLunas(data.id); setLoadNotaLunas(false)}} isLoading={loadNotaLunas}>{loadNotaLunas ? '' : 'Cetak Nota'}</Button>
               :
               <>
                 <Button className={`text-white rounded-md`} isIconOnly size="sm" color="danger" onClick={() => {setKonfirmCheckOut(true); setTempId(data.id)}} isDisabled={data.status != 'In'}>CO</Button>

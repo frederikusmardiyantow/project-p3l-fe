@@ -186,7 +186,7 @@ function ProfilPage() {
     <>
       <div className="relative">
         <NavbarComp kelas="absolute" />
-        <div className="h-[700px] md:h-[500px] bg-[url('http://127.0.0.1:5173/bg-profil.jpg')] bg-cover bg-no-repeat bg-fixed"></div>
+        <div className="h-[700px] md:h-[500px] bg-[url('https://project-p3l-fe.vercel.app/bg-profil.jpg')] bg-cover bg-no-repeat bg-fixed"></div>
 
         <div className="justify-center flex top-40 absolute w-full">
           <div className="flex flex-col md:flex-row w-3/4 gap-5 md:gap-10 ">
