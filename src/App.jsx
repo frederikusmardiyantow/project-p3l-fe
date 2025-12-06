@@ -31,23 +31,22 @@ import CheckOut from "./pages/Pegawai/FO/CheckOut";
 import PendapatanBulanan from "./pages/Pegawai/Laporan/PendapatanBulanan";
 import JumlahTamu from "./pages/Pegawai/Laporan/JumlahTamu";
 
-axios.defaults.baseURL = "https://project-p3l-be.frederikus.com/api";
+axios.defaults.baseURL = "https://p3l-be.fremwe.my.id/api";
 
 function App() {
-  
-// useEffect(() => {
-//   localStorage.getItem('apiKey');
-// }, []);
+  // useEffect(() => {
+  //   localStorage.getItem('apiKey');
+  // }, []);
 
   return (
     <BrowserRouter>
-      <ScrollToTop/>
+      <ScrollToTop />
       <Routes>
         <Route index element={<Home />} />
         <Route path="login" element={<LoginPage />} />
         <Route path="loginAdm" element={<LoginAdminPage />} />
         <Route path="forgetPassword" element={<ForgetPassword />} />
-        <Route path="resetPassword/:token" element={<ResetPassword/>} />
+        <Route path="resetPassword/:token" element={<ResetPassword />} />
         <Route path="register" element={<Register />} />
         <Route path="kamar" element={<KamarPage />} />
         <Route path="ketersediaan/kamar" element={<KetersediaanKamar />} />
@@ -55,23 +54,41 @@ function App() {
         <Route path="profil" element={<ProfilPage />} />
         <Route path="riwayatReservasi" element={<RiwayatReservasi />} />
         <Route path="*" element={<ErrorPage />} />
-        <Route path="admin/lupaPassword" element={<ForgetPassAdmin/>}/>
-        <Route path="admin/" element={<SidebarComp/>}>
-          <Route path="dashboard" element={<Dashboard/>}/>
-          <Route path="kamar" element={<KamarAdmin/>}/>
-          <Route path="season" element={<SeasonSM/>}/>
-          <Route path="tarif" element={<TarifSM/>}/>
-          <Route path="fasilitas" element={<FasilitasBerbayarSM/>}/>
-          <Route path="customer" element={<CustomerSM/>}/>
-          <Route path="customer/riwayat/:idCust" element={<RiwayatTrxCustomer/>}/>
-          <Route path="customer/reservasi/:idCust/new" element={<AddReservasiGroup/>}/>
-          <Route path="reservasi" element={<Reservasi/>}/>
-          <Route path="reservasi/:idReservasi/pilih-kamar" element={<PilihKamar/>}/>
-          <Route path="laporan/CustomerBaruPerBulan" element={<CustBaruPerBulan/>}/>
-          <Route path="laporan/PemesanTerbanyak" element={<CustPemesanTerbanyak/>}/>
-          <Route path="laporan/PendapatanPerBulan" element={<PendapatanBulanan/>}/>
-          <Route path="laporan/JumlahTamu" element={<JumlahTamu/>}/>
-          <Route path="checkOut/:idReservasi" element={<CheckOut/>}/>
+        <Route path="admin/lupaPassword" element={<ForgetPassAdmin />} />
+        <Route path="admin/" element={<SidebarComp />}>
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route path="kamar" element={<KamarAdmin />} />
+          <Route path="season" element={<SeasonSM />} />
+          <Route path="tarif" element={<TarifSM />} />
+          <Route path="fasilitas" element={<FasilitasBerbayarSM />} />
+          <Route path="customer" element={<CustomerSM />} />
+          <Route
+            path="customer/riwayat/:idCust"
+            element={<RiwayatTrxCustomer />}
+          />
+          <Route
+            path="customer/reservasi/:idCust/new"
+            element={<AddReservasiGroup />}
+          />
+          <Route path="reservasi" element={<Reservasi />} />
+          <Route
+            path="reservasi/:idReservasi/pilih-kamar"
+            element={<PilihKamar />}
+          />
+          <Route
+            path="laporan/CustomerBaruPerBulan"
+            element={<CustBaruPerBulan />}
+          />
+          <Route
+            path="laporan/PemesanTerbanyak"
+            element={<CustPemesanTerbanyak />}
+          />
+          <Route
+            path="laporan/PendapatanPerBulan"
+            element={<PendapatanBulanan />}
+          />
+          <Route path="laporan/JumlahTamu" element={<JumlahTamu />} />
+          <Route path="checkOut/:idReservasi" element={<CheckOut />} />
         </Route>
         {/* <Route path="admin/*" element={
           <SidebarComp>
